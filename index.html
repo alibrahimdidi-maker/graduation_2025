@@ -2,18 +2,17 @@
 <html lang="dv" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Graduation System (Secure Access)</title>
+    <title>Graduation System (Protected)</title>
     <style>
         /* --- SECURITY: PREVENT SELECTION --- */
         body {
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10 and IE 11 */
-            user-select: none; /* Standard syntax */
+            -webkit-user-select: none; -ms-user-select: none; user-select: none;
             margin: 0; padding: 0;
             background: #00281c; /* Background for Login Screen */
+            font-family: 'Faruuma', 'Times New Roman', serif;
         }
 
-        /* --- DEFAULT FONT SETUP --- */
+        /* --- FONT SETUP --- */
         @font-face {
             font-family: 'Faruuma';
             src: local('Faruuma'), local('Faruumaa'), url('Fonts/faruuma.ttf') format('truetype');
@@ -25,7 +24,7 @@
             background: #00281c; z-index: 10000;
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
-            font-family: 'Faruuma', serif; color: #d4af37;
+            color: #d4af37;
         }
         #loginBox {
             background: rgba(255, 255, 255, 0.1);
@@ -37,7 +36,7 @@
         #passInput {
             padding: 10px; font-size: 20px; border-radius: 5px; border: none; 
             text-align: center; width: 250px; margin-top: 15px;
-            font-family: sans-serif; /* Password dots look better in sans-serif */
+            font-family: sans-serif; 
         }
         #loginBtn {
             margin-top: 15px; padding: 10px 30px; font-size: 18px; cursor: pointer; 
@@ -45,9 +44,8 @@
             font-weight: bold; color: #00281c; font-family: 'Faruuma';
         }
         #loginBtn:hover { background: #ffd700; }
-        .hidden { display: none !important; }
 
-        /* --- DESKTOP LAYOUT --- */
+        /* --- MAIN LAYOUT (HIDDEN INITIALLY) --- */
         .main-layout { 
             display: none; /* HIDDEN BY DEFAULT */
             gap: 15px; height: 96vh; max-width: 100%; margin: 0 auto; 
@@ -110,7 +108,6 @@
         .btn-clear { background: #c62828; flex: 0.5; color: white; }
         .btn-clear:hover { background: #b71c1c; }
 
-        /* Video Control Styles */
         .video-controls { background: #e3f2fd; padding: 15px; border-radius: 8px; border: 1px solid #90caf9; margin-top: 20px; }
         .btn-vid { font-size: 14px; padding: 8px; margin-top: 5px; border:none; border-radius:4px; cursor:pointer; font-weight:bold; color:white; width: 100%; margin-bottom: 10px; }
 
@@ -128,10 +125,10 @@
             <h1 style="margin-bottom: 5px;">Graduation System</h1>
             <p style="font-size: 14px; margin-bottom: 20px;">Protected File</p>
             
-            <input type="password" id="passInput" placeholder="ޕާސްވޯޑް ޖަހާ...">
+            <input type="password" id="passInput" placeholder="Password">
             <br>
             <button id="loginBtn" onclick="checkPassword()">Login</button>
-            <p id="loginError" style="color: #ff5252; display: none; margin-top: 10px;">ޕާސްވޯޑް ނުބައި!</p>
+            <p id="loginError" style="color: #ff5252; display: none; margin-top: 10px; font-weight: bold;">Incorrect Password!</p>
         </div>
         <div style="position:absolute; bottom:20px; font-size:12px; opacity:0.5;">
             &copy; Ali Ibrahim Didi (7791550)
@@ -216,38 +213,48 @@
     </div>
 
 <script>
-    // --- SECURITY & LOGIN LOGIC ---
-    
-    // 1. Password Protection Logic
+    // ----------------------------------------------------
+    // 1. PASSWORD & SECURITY LOGIC
+    // ----------------------------------------------------
     function checkPassword() {
-        const passwordInput = document.getElementById('passInput').value;
-        const correctPassword = "7791550"; // <--- CHANGE PASSWORD HERE IF NEEDED
+        const inputField = document.getElementById('passInput');
+        const errorMsg = document.getElementById('loginError');
+        
+        // Trim removes accidental spaces
+        const password = inputField.value.trim();
+        const correct = "7791550"; 
 
-        if (passwordInput === correctPassword) {
+        if (password === correct) {
+            // Unlock
             document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'flex';
-            // Change background color to normal
-            document.body.style.background = '#eceff1';
+            const app = document.getElementById('mainApp');
+            app.style.display = 'flex';
+            document.body.style.background = '#eceff1'; // Restore background
         } else {
-            document.getElementById('loginError').style.display = 'block';
+            // Error
+            errorMsg.style.display = 'block';
+            inputField.value = '';
+            inputField.focus();
         }
     }
 
-    // Allow "Enter" key on password field
+    // Allow Enter key to submit password
     document.getElementById('passInput').addEventListener("keyup", function(event) {
         if (event.key === "Enter") {
             checkPassword();
         }
     });
 
-    // 2. Disable Inspect & Shortcuts
+    // Block F12, Inspect, etc.
     document.onkeydown = function(e) {
-        if(e.keyCode == 123) return false; // F12
+        if(e.keyCode == 123) return false; 
         if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false;
         if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
     }
 
-    // --- EXISTING APP LOGIC ---
+    // ----------------------------------------------------
+    // 2. MAIN APPLICATION LOGIC
+    // ----------------------------------------------------
     let tvWindow = null;
     let students = [];
     let photoFiles = {};
@@ -514,4 +521,112 @@
                 @font-face { font-family: 'Faruuma'; src: url('${currentFontData}') format('truetype'); }
                 body, h1, .comm, h2, input, textarea { font-family: 'Faruuma', sans-serif !important; }
             `;
-            let editorStyle = document.getElementById('dynamic-editor-
+            let editorStyle = document.getElementById('dynamic-editor-font');
+            if(!editorStyle) {
+                editorStyle = document.createElement('style');
+                editorStyle.id = 'dynamic-editor-font';
+                document.head.appendChild(editorStyle);
+            }
+            editorStyle.innerHTML = fontCss;
+            if(tvWindow && !tvWindow.closed) {
+                let tvStyle = tvWindow.document.getElementById('dynamic-font-style');
+                if(!tvStyle) {
+                    tvStyle = tvWindow.document.createElement('style');
+                    tvStyle.id = 'dynamic-font-style';
+                    tvWindow.document.head.appendChild(tvStyle);
+                }
+                tvStyle.innerHTML = fontCss;
+                alert("✅ Font Updated on TV Screen!");
+            }
+        };
+        reader.readAsDataURL(file);
+    };
+    document.getElementById('csvFile').onchange = e => {
+        const r = new FileReader();
+        r.onload = ev => {
+            let txt = ev.target.result; if(txt.charCodeAt(0)===0xFEFF) txt=txt.substr(1);
+            let lines = txt.split('\n');
+            students = [];
+            lines.forEach(l => {
+                let c = l.split(',');
+                if(c.length>1) {
+                    students.push({
+                        nD: c[0]?.trim(), nE: c[1]?.trim(), cD: c[2]?.trim(), cE: c[3]?.trim(), 
+                        fD: c[4]?.trim(), fE: c[5]?.trim(), cm: c[6]?.trim(), ph: c[7]?.trim()
+                    });
+                }
+            });
+            filterList(); alert("Loaded: " + students.length + " Students");
+        };
+        r.readAsText(e.target.files[0]);
+    };
+    document.getElementById('photoFolder').onchange = e => {
+        photoFiles = {};
+        for(let f of e.target.files) {
+            let name = f.name.toLowerCase();
+            photoFiles[name] = f; 
+            let nameNoExt = name.split('.').slice(0, -1).join('.');
+            if(nameNoExt) photoFiles[nameNoExt] = f; 
+        }
+        alert("✅ Auto-Match Ready: " + e.target.files.length + " photos loaded.");
+    };
+    document.getElementById('logoFile').onchange = e => {
+        processPhoto(e.target.files[0], d => {
+            currentLogoData = d; document.getElementById('logoPreview').src = d;
+            if(tvWindow && !tvWindow.closed) {
+                const l = tvWindow.document.getElementById('logo');
+                l.src = d; l.style.display = 'block';
+            }
+        });
+    };
+    function manualPhoto(input) {
+        if(input.files && input.files[0]) {
+            processPhoto(input.files[0], d => {
+                currentPhotoData = d;
+                document.getElementById('previewImg').src = d;
+                document.getElementById('pStat').innerText = "✅ Manual Set";
+                document.getElementById('pStat').style.color = "blue";
+            });
+        }
+    }
+    function filterList() {
+        let t = document.getElementById('search').value.toLowerCase();
+        let l = document.getElementById('stuList'); l.innerHTML = '';
+        students.forEach((s,i) => {
+            if((s.nD+s.nE).toLowerCase().includes(t)) {
+                let o = document.createElement('option'); o.value=i; o.text=(i+1)+". "+s.nD; l.add(o);
+            }
+        });
+    }
+    function loadStudent() {
+        let idx = document.getElementById('stuList').value;
+        let s = students[idx];
+        document.getElementById('nD').value = s.nD; document.getElementById('nE').value = s.nE;
+        document.getElementById('fD').value = s.fD; document.getElementById('fE').value = s.fE;
+        document.getElementById('cD').value = s.cD; document.getElementById('cE').value = s.cE;
+        document.getElementById('cm').value = s.cm;
+        let pName = s.ph ? s.ph.trim().toLowerCase() : "";
+        let prev = document.getElementById('previewImg');
+        let stat = document.getElementById('pStat');
+        let foundFile = photoFiles[pName]; 
+        if(foundFile) {
+            stat.innerText = "Loading Auto...";
+            processPhoto(foundFile, d => {
+                currentPhotoData = d; prev.src = d; 
+                stat.innerText = "✅ Found Auto"; stat.style.color="green";
+            });
+        } else {
+            currentPhotoData = null; prev.src = "https://via.placeholder.com/150?text=No+Photo"; 
+            stat.innerText = "❌ Missing (" + (s.ph||"None") + ")"; stat.style.color="red";
+        }
+    }
+    function move(d) {
+        let l = document.getElementById('stuList');
+        if(l.options.length) {
+            l.selectedIndex = Math.min(Math.max(l.selectedIndex+d, 0), l.options.length-1);
+            loadStudent();
+        }
+    }
+</script>
+</body>
+</html>
