@@ -2,25 +2,57 @@
 <html lang="dv" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Graduation System (Video & Fullscreen)</title>
+    <title>Graduation System (Secure Access)</title>
     <style>
-        /* --- SECURITY --- */
-        body { -webkit-user-select: none; -ms-user-select: none; user-select: none; }
+        /* --- SECURITY: PREVENT SELECTION --- */
+        body {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+            margin: 0; padding: 0;
+            background: #00281c; /* Background for Login Screen */
+        }
 
-        /* --- FONT SETUP --- */
+        /* --- DEFAULT FONT SETUP --- */
         @font-face {
             font-family: 'Faruuma';
             src: local('Faruuma'), local('Faruumaa'), url('Fonts/faruuma.ttf') format('truetype');
         }
 
-        /* --- LAYOUT --- */
-        body { 
-            font-family: 'Faruuma', 'Times New Roman', serif; 
-            background: #eceff1; padding: 10px; margin: 0; 
-            height: 100vh; box-sizing: border-box; overflow: hidden; 
+        /* --- LOGIN SCREEN STYLES --- */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #00281c; z-index: 10000;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            font-family: 'Faruuma', serif; color: #d4af37;
         }
-        
-        .main-layout { display: flex; gap: 15px; height: 96vh; max-width: 100%; margin: 0 auto; }
+        #loginBox {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px; border-radius: 15px;
+            border: 2px solid #d4af37;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        #passInput {
+            padding: 10px; font-size: 20px; border-radius: 5px; border: none; 
+            text-align: center; width: 250px; margin-top: 15px;
+            font-family: sans-serif; /* Password dots look better in sans-serif */
+        }
+        #loginBtn {
+            margin-top: 15px; padding: 10px 30px; font-size: 18px; cursor: pointer; 
+            background: #d4af37; border: none; border-radius: 5px; 
+            font-weight: bold; color: #00281c; font-family: 'Faruuma';
+        }
+        #loginBtn:hover { background: #ffd700; }
+        .hidden { display: none !important; }
+
+        /* --- DESKTOP LAYOUT --- */
+        .main-layout { 
+            display: none; /* HIDDEN BY DEFAULT */
+            gap: 15px; height: 96vh; max-width: 100%; margin: 0 auto; 
+            padding: 10px; box-sizing: border-box; background: #eceff1;
+        }
 
         .sidebar {
             flex: 0 0 320px; background: white; padding: 15px; border-radius: 8px;
@@ -91,92 +123,131 @@
 </head>
 <body oncontextmenu="return false;">
 
-<div class="main-layout">
-    <div class="sidebar">
-        <button class="launch-btn" onclick="openTV()">🖥️ 1. ޓީވީ ސްކްރީން ހުޅުވާ</button>
-        <div id="connStatus" style="margin-top:0px; font-size:12px; color:red; font-weight:bold; text-align:center; margin-bottom:10px;">Not Connected</div>
-
-        <div class="file-box">
-            <label>1. CSV ލިސްޓު:</label><input type="file" id="csvFile" accept=".csv">
-            <label>2. ފޮޓޯ ފޯލްޑަރ:</label><input type="file" id="photoFolder" webkitdirectory directory multiple>
-            <label>3. ލޯގޯ (PNG):</label><input type="file" id="logoFile" accept="image/*">
-            <label>4. ފޮންޓް (TTF):</label><input type="file" id="fontFile" accept=".ttf, .otf">
-        </div>
-
-        <label>ނަން ހޯދާ:</label>
-        <input type="text" id="search" placeholder="Type to search..." onkeyup="filterList()">
-        <select id="stuList" size="10" onchange="loadStudent()"></select>
-    </div>
-
-    <div class="editor">
-        <h2>🎓 ކޮންޓްރޯލް ޕެނަލް</h2>
-        
-        <div class="row">
-            <div class="col"><label>ނަން (ދިވެހި)</label><input id="nD" class="dhi"></div>
-            <div class="col"><label style="text-align:left;">Name (English)</label><input id="nE" class="eng"></div>
-        </div>
-        <div class="row">
-            <div class="col"><label>ފެކަލްޓީ (ދިވެހި)</label><input id="fD" class="dhi"></div>
-            <div class="col"><label style="text-align:left;">Faculty (English)</label><input id="fE" class="eng"></div>
-        </div>
-        <div class="row">
-            <div class="col"><label>ކޯސް (ދިވެހި)</label><input id="cD" class="dhi"></div>
-            <div class="col"><label style="text-align:left;">Course (English)</label><input id="cE" class="eng"></div>
-        </div>
-
-        <label>ކޮމެންޓް (މެދަށް):</label>
-        <textarea id="cm" rows="2" class="dhi" style="text-align:center; font-size: 20px;"></textarea>
-
-        <div class="preview-container">
-            <div style="text-align:center;">
-                <span style="font-size:11px;">Logo</span><br>
-                <img id="logoPreview" alt="-">
-            </div>
-            <div style="text-align:center;">
-                <span id="pStat" style="font-size:11px; display:block; font-weight:bold;">No Photo</span>
-                <img id="previewImg" src="https://via.placeholder.com/150?text=No+Img">
-                <br>
-                <button class="manual-btn" onclick="document.getElementById('singlePhoto').click()">📷 ބަދަލުކުރޭ</button>
-                <input type="file" id="singlePhoto" accept="image/*" style="display:none" onchange="manualPhoto(this)">
-            </div>
-        </div>
-
-        <div class="controls">
-            <button class="action btn-nav" onclick="move(-1)">◀ Prev</button>
-            <button class="action btn-live" onclick="updateTV()">📺 ޓީވީއަށް އަރުވާ</button>
-            <button class="action btn-nav" onclick="move(1)">Next ▶</button>
-            <button class="action btn-clear" onclick="clearTV()" title="Hide Info">X</button>
-        </div>
-        <div id="statusMsg">Ready</div>
-
-        <div class="video-controls">
-            <h3>🎥 Video Player</h3>
+    <div id="loginOverlay">
+        <div id="loginBox">
+            <h1 style="margin-bottom: 5px;">Graduation System</h1>
+            <p style="font-size: 14px; margin-bottom: 20px;">Protected File</p>
             
-            <label>1. Hard Disk Video:</label>
-            <input type="file" id="videoLocal" accept="video/*" style="margin-bottom:5px;">
-            <button class="btn-vid" style="background:#e65100;" onclick="playLocalVideo()">▶ Play Local Video</button>
-
-            <label style="margin-top:10px;">2. YouTube Link:</label>
-            <input type="text" id="ytLink" placeholder="Paste YouTube link here..." style="font-family:sans-serif; text-align:left;">
-            <button class="btn-vid" style="background:#c62828;" onclick="playYoutube()">▶ Play YouTube</button>
-
-            <button class="btn-vid" style="background:#333; margin-top:15px;" onclick="stopVideo()">⏹ Stop / Clear Video</button>
+            <input type="password" id="passInput" placeholder="ޕާސްވޯޑް ޖަހާ...">
+            <br>
+            <button id="loginBtn" onclick="checkPassword()">Login</button>
+            <p id="loginError" style="color: #ff5252; display: none; margin-top: 10px;">ޕާސްވޯޑް ނުބައި!</p>
         </div>
-
-        <div class="copyright-text">
-            &copy; Copyright Reserved <b>Ali Ibrahim Didi (7791550)</b>
+        <div style="position:absolute; bottom:20px; font-size:12px; opacity:0.5;">
+            &copy; Ali Ibrahim Didi (7791550)
         </div>
     </div>
-</div>
+
+    <div class="main-layout" id="mainApp">
+        <div class="sidebar">
+            <button class="launch-btn" onclick="openTV()">🖥️ 1. ޓީވީ ސްކްރީން ހުޅުވާ</button>
+            <div id="connStatus" style="margin-top:0px; font-size:12px; color:red; font-weight:bold; text-align:center; margin-bottom:10px;">Not Connected</div>
+
+            <div class="file-box">
+                <label>1. CSV ލިސްޓު:</label><input type="file" id="csvFile" accept=".csv">
+                <label>2. ފޮޓޯ ފޯލްޑަރ:</label><input type="file" id="photoFolder" webkitdirectory directory multiple>
+                <label>3. ލޯގޯ (PNG):</label><input type="file" id="logoFile" accept="image/*">
+                <label>4. ފޮންޓް (TTF):</label><input type="file" id="fontFile" accept=".ttf, .otf">
+            </div>
+
+            <label>ނަން ހޯދާ:</label>
+            <input type="text" id="search" placeholder="Type to search..." onkeyup="filterList()">
+            <select id="stuList" size="10" onchange="loadStudent()"></select>
+        </div>
+
+        <div class="editor">
+            <h2>🎓 ކޮންޓްރޯލް ޕެނަލް</h2>
+            
+            <div class="row">
+                <div class="col"><label>ނަން (ދިވެހި)</label><input id="nD" class="dhi"></div>
+                <div class="col"><label style="text-align:left;">Name (English)</label><input id="nE" class="eng"></div>
+            </div>
+            <div class="row">
+                <div class="col"><label>ފެކަލްޓީ (ދިވެހި)</label><input id="fD" class="dhi"></div>
+                <div class="col"><label style="text-align:left;">Faculty (English)</label><input id="fE" class="eng"></div>
+            </div>
+            <div class="row">
+                <div class="col"><label>ކޯސް (ދިވެހި)</label><input id="cD" class="dhi"></div>
+                <div class="col"><label style="text-align:left;">Course (English)</label><input id="cE" class="eng"></div>
+            </div>
+
+            <label>ކޮމެންޓް (މެދަށް):</label>
+            <textarea id="cm" rows="2" class="dhi" style="text-align:center; font-size: 20px;"></textarea>
+
+            <div class="preview-container">
+                <div style="text-align:center;">
+                    <span style="font-size:11px;">Logo</span><br>
+                    <img id="logoPreview" alt="-">
+                </div>
+                <div style="text-align:center;">
+                    <span id="pStat" style="font-size:11px; display:block; font-weight:bold;">No Photo</span>
+                    <img id="previewImg" src="https://via.placeholder.com/150?text=No+Img">
+                    <br>
+                    <button class="manual-btn" onclick="document.getElementById('singlePhoto').click()">📷 ބަދަލުކުރޭ</button>
+                    <input type="file" id="singlePhoto" accept="image/*" style="display:none" onchange="manualPhoto(this)">
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="action btn-nav" onclick="move(-1)">◀ Prev</button>
+                <button class="action btn-live" onclick="updateTV()">📺 ޓީވީއަށް އަރުވާ</button>
+                <button class="action btn-nav" onclick="move(1)">Next ▶</button>
+                <button class="action btn-clear" onclick="clearTV()" title="Hide Info">X</button>
+            </div>
+            <div id="statusMsg">Ready</div>
+
+            <div class="video-controls">
+                <h3>🎥 Video Player</h3>
+                <label>1. Hard Disk Video:</label>
+                <input type="file" id="videoLocal" accept="video/*" style="margin-bottom:5px;">
+                <button class="btn-vid" style="background:#e65100;" onclick="playLocalVideo()">▶ Play Local Video</button>
+
+                <label style="margin-top:10px;">2. YouTube Link:</label>
+                <input type="text" id="ytLink" placeholder="Paste YouTube link here..." style="font-family:sans-serif; text-align:left;">
+                <button class="btn-vid" style="background:#c62828;" onclick="playYoutube()">▶ Play YouTube</button>
+
+                <button class="btn-vid" style="background:#333; margin-top:15px;" onclick="stopVideo()">⏹ Stop / Clear Video</button>
+            </div>
+
+            <div class="copyright-text">
+                &copy; Copyright Reserved <b>Ali Ibrahim Didi (7791550)</b>
+            </div>
+        </div>
+    </div>
 
 <script>
-    // --- SECURITY ---
+    // --- SECURITY & LOGIN LOGIC ---
+    
+    // 1. Password Protection Logic
+    function checkPassword() {
+        const passwordInput = document.getElementById('passInput').value;
+        const correctPassword = "7791550"; // <--- CHANGE PASSWORD HERE IF NEEDED
+
+        if (passwordInput === correctPassword) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'flex';
+            // Change background color to normal
+            document.body.style.background = '#eceff1';
+        } else {
+            document.getElementById('loginError').style.display = 'block';
+        }
+    }
+
+    // Allow "Enter" key on password field
+    document.getElementById('passInput').addEventListener("keyup", function(event) {
+        if (event.key === "Enter") {
+            checkPassword();
+        }
+    });
+
+    // 2. Disable Inspect & Shortcuts
     document.onkeydown = function(e) {
-        if(e.keyCode == 123) return false; 
+        if(e.keyCode == 123) return false; // F12
         if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false;
         if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
     }
 
+    // --- EXISTING APP LOGIC ---
     let tvWindow = null;
     let students = [];
     let photoFiles = {};
@@ -184,7 +255,6 @@
     let currentLogoData = null;
     let currentFontData = null;
 
-    // --- 1. OPEN TV SCREEN ---
     function openTV() {
         tvWindow = window.open('', 'GradTV', 'width=1280,height=720,menubar=no,toolbar=no');
         if(!tvWindow) { alert("⚠️ Please Allow Popups!"); return; }
@@ -210,7 +280,6 @@
                     cursor: none; user-select: none;
                 }
                 
-                /* FULLSCREEN BUTTON OVERLAY */
                 #fsOverlay {
                     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
                     background: rgba(0,0,0,0.8); z-index: 9999;
@@ -222,7 +291,6 @@
                     color: #00281c; box-shadow: 0 0 20px rgba(212,175,55,0.8);
                 }
 
-                /* LOGO */
                 .uni-logo { 
                     position: absolute; 
                     top: 25%; left: 50%; transform: translate(-50%, -50%); 
@@ -232,7 +300,6 @@
                 }
                 .uni-logo.live-mode { top: 7.5vh; height: 80px; transform: translate(-50%, -50%); }
 
-                /* CARD */
                 .card-container {
                     position: relative; width: 90vw; max-width: 1500px; height: 85vh;
                     display: flex; justify-content: center; align-items: center;
@@ -249,14 +316,12 @@
                 }
                 .card.active { opacity: 1; }
 
-                /* Corners */
                 .corner { position: absolute; width: 60px; height: 60px; border: 5px solid #d4af37; }
                 .tl { top: -6px; left: -6px; border-right: 0; border-bottom: 0; }
                 .tr { top: -6px; right: -6px; border-left: 0; border-bottom: 0; }
                 .bl { bottom: -6px; left: -6px; border-right: 0; border-top: 0; }
                 .br { bottom: -6px; right: -6px; border-left: 0; border-top: 0; }
 
-                /* IDLE TEXT */
                 .idle-screen {
                     position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%);
                     text-align: center; color: #d4af37; transition: opacity 0.5s ease; opacity: 1; z-index: 5;
@@ -265,7 +330,6 @@
                 .ceremony-title { font-family: 'Cinzel', serif; font-size: 5em; letter-spacing: 5px; border-bottom: 3px solid #d4af37; padding-bottom: 20px; }
                 .ceremony-year { font-family: 'Times New Roman', serif; font-size: 3em; margin-top: 20px; color: #fff; }
 
-                /* STUDENT DATA */
                 .photo-col { flex: 0 0 320px; display: flex; justify-content: center; transform: translateX(-40px); }
                 #stuImg { width: 260px; height: 260px; object-fit: cover; border-radius: 50%; border: 5px solid #d4af37; background: #000; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
                 .text-col { flex: 1; text-align: right; padding-right: 30px; color: white; display: flex; flex-direction: column; justify-content: center; }
@@ -278,7 +342,6 @@
                 .crs-en { direction: ltr; text-align: left; font-family: 'Times New Roman', serif; font-style: italic; font-size: 2em; color: #80cbc4; margin-bottom: 20px; }
                 .comm { font-family: 'Faruuma'; background: rgba(212,175,55,0.15); border: 2px solid #d4af37; padding: 20px; font-size: 2.2em; color: #fff; border-radius: 10px; text-align: center; margin-top: 20px; width: 100%; box-sizing: border-box; }
 
-                /* VIDEO LAYER (Top Z-Index) */
                 #videoLayer {
                     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                     background: black; z-index: 500; display: none;
@@ -297,16 +360,12 @@
         </head>
         <body oncontextmenu="return false;">
             <div id="fsOverlay"><button id="fsBtn" onclick="goFullScreen()">⛶ GO FULL SCREEN</button></div>
-
             <div id="videoLayer"></div>
-
             <img id="logo" class="uni-logo" style="display:none">
-
             <div id="idle" class="idle-screen">
                 <div class="ceremony-title">GRADUATION CEREMONY</div>
                 <div class="ceremony-year">2024</div>
             </div>
-
             <div class="card-container">
                 <div id="card" class="card">
                     <div class="corner tl"></div><div class="corner tr"></div>
@@ -335,7 +394,6 @@
         document.getElementById('connStatus').style.color = "green";
     }
 
-    // --- 2. UPDATE TV (Live Student) ---
     function updateTV() {
         if(!tvWindow || tvWindow.closed) { alert("TV Closed! Re-open."); return; }
         const doc = tvWindow.document;
@@ -353,7 +411,6 @@
             if(currentPhotoData) { img.src = currentPhotoData; img.style.display='block'; }
             else { img.src = 'https://via.placeholder.com/280x280/00281c/d4af37?text=No+Photo'; }
 
-            // Logo Animation
             if(currentLogoData) {
                 const l = doc.getElementById('logo');
                 l.src = currentLogoData; l.style.display = 'block';
@@ -363,7 +420,6 @@
             doc.getElementById('idle').classList.add('hidden');
             setTimeout(() => { doc.getElementById('card').classList.add('active'); }, 300);
 
-            // Ensure video layer is hidden
             doc.getElementById('videoLayer').style.display = 'none';
             doc.getElementById('videoLayer').innerHTML = '';
 
@@ -374,7 +430,6 @@
         }
     }
 
-    // --- 3. VIDEO FUNCTIONS ---
     function playLocalVideo() {
         if(!tvWindow || tvWindow.closed) { alert("TV Closed!"); return; }
         const file = document.getElementById('videoLocal').files[0];
@@ -394,7 +449,6 @@
         const url = document.getElementById('ytLink').value;
         if(!url) { alert("Enter YouTube URL!"); return; }
 
-        // Extract ID
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
         const videoId = (match && match[2].length === 11) ? match[2] : null;
@@ -414,12 +468,8 @@
         vLayer.innerHTML = '';
         vLayer.style.display = 'none';
         document.getElementById('statusMsg').innerText = "Video Stopped";
-        
-        // Return to idle if no student active, or keep student if active
-        // This keeps the underlying layer as is.
     }
 
-    // --- 4. CLEAR TV ---
     function clearTV() {
         if(!tvWindow || tvWindow.closed) return;
         const doc = tvWindow.document;
@@ -430,14 +480,12 @@
         const l = doc.getElementById('logo');
         if(l) l.classList.remove('live-mode');
 
-        // Also clear video
         stopVideo();
 
         document.getElementById('statusMsg').innerText = "Screen Cleared";
         document.getElementById('statusMsg').style.color = "orange";
     }
 
-    // --- UTILS ---
     function processPhoto(file, cb) {
         const reader = new FileReader();
         reader.onload = e => {
@@ -466,112 +514,4 @@
                 @font-face { font-family: 'Faruuma'; src: url('${currentFontData}') format('truetype'); }
                 body, h1, .comm, h2, input, textarea { font-family: 'Faruuma', sans-serif !important; }
             `;
-            let editorStyle = document.getElementById('dynamic-editor-font');
-            if(!editorStyle) {
-                editorStyle = document.createElement('style');
-                editorStyle.id = 'dynamic-editor-font';
-                document.head.appendChild(editorStyle);
-            }
-            editorStyle.innerHTML = fontCss;
-            if(tvWindow && !tvWindow.closed) {
-                let tvStyle = tvWindow.document.getElementById('dynamic-font-style');
-                if(!tvStyle) {
-                    tvStyle = tvWindow.document.createElement('style');
-                    tvStyle.id = 'dynamic-font-style';
-                    tvWindow.document.head.appendChild(tvStyle);
-                }
-                tvStyle.innerHTML = fontCss;
-                alert("✅ Font Updated on TV Screen!");
-            }
-        };
-        reader.readAsDataURL(file);
-    };
-    document.getElementById('csvFile').onchange = e => {
-        const r = new FileReader();
-        r.onload = ev => {
-            let txt = ev.target.result; if(txt.charCodeAt(0)===0xFEFF) txt=txt.substr(1);
-            let lines = txt.split('\n');
-            students = [];
-            lines.forEach(l => {
-                let c = l.split(',');
-                if(c.length>1) {
-                    students.push({
-                        nD: c[0]?.trim(), nE: c[1]?.trim(), cD: c[2]?.trim(), cE: c[3]?.trim(), 
-                        fD: c[4]?.trim(), fE: c[5]?.trim(), cm: c[6]?.trim(), ph: c[7]?.trim()
-                    });
-                }
-            });
-            filterList(); alert("Loaded: " + students.length + " Students");
-        };
-        r.readAsText(e.target.files[0]);
-    };
-    document.getElementById('photoFolder').onchange = e => {
-        photoFiles = {};
-        for(let f of e.target.files) {
-            let name = f.name.toLowerCase();
-            photoFiles[name] = f; 
-            let nameNoExt = name.split('.').slice(0, -1).join('.');
-            if(nameNoExt) photoFiles[nameNoExt] = f; 
-        }
-        alert("✅ Auto-Match Ready: " + e.target.files.length + " photos loaded.");
-    };
-    document.getElementById('logoFile').onchange = e => {
-        processPhoto(e.target.files[0], d => {
-            currentLogoData = d; document.getElementById('logoPreview').src = d;
-            if(tvWindow && !tvWindow.closed) {
-                const l = tvWindow.document.getElementById('logo');
-                l.src = d; l.style.display = 'block';
-            }
-        });
-    };
-    function manualPhoto(input) {
-        if(input.files && input.files[0]) {
-            processPhoto(input.files[0], d => {
-                currentPhotoData = d;
-                document.getElementById('previewImg').src = d;
-                document.getElementById('pStat').innerText = "✅ Manual Set";
-                document.getElementById('pStat').style.color = "blue";
-            });
-        }
-    }
-    function filterList() {
-        let t = document.getElementById('search').value.toLowerCase();
-        let l = document.getElementById('stuList'); l.innerHTML = '';
-        students.forEach((s,i) => {
-            if((s.nD+s.nE).toLowerCase().includes(t)) {
-                let o = document.createElement('option'); o.value=i; o.text=(i+1)+". "+s.nD; l.add(o);
-            }
-        });
-    }
-    function loadStudent() {
-        let idx = document.getElementById('stuList').value;
-        let s = students[idx];
-        document.getElementById('nD').value = s.nD; document.getElementById('nE').value = s.nE;
-        document.getElementById('fD').value = s.fD; document.getElementById('fE').value = s.fE;
-        document.getElementById('cD').value = s.cD; document.getElementById('cE').value = s.cE;
-        document.getElementById('cm').value = s.cm;
-        let pName = s.ph ? s.ph.trim().toLowerCase() : "";
-        let prev = document.getElementById('previewImg');
-        let stat = document.getElementById('pStat');
-        let foundFile = photoFiles[pName]; 
-        if(foundFile) {
-            stat.innerText = "Loading Auto...";
-            processPhoto(foundFile, d => {
-                currentPhotoData = d; prev.src = d; 
-                stat.innerText = "✅ Found Auto"; stat.style.color="green";
-            });
-        } else {
-            currentPhotoData = null; prev.src = "https://via.placeholder.com/150?text=No+Photo"; 
-            stat.innerText = "❌ Missing (" + (s.ph||"None") + ")"; stat.style.color="red";
-        }
-    }
-    function move(d) {
-        let l = document.getElementById('stuList');
-        if(l.options.length) {
-            l.selectedIndex = Math.min(Math.max(l.selectedIndex+d, 0), l.options.length-1);
-            loadStudent();
-        }
-    }
-</script>
-</body>
-</html>
+            let editorStyle = document.getElementById('dynamic-editor-
