@@ -2,7 +2,7 @@
 <html lang="dv" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Graduation System (No Border Overlap)</title>
+    <title>Graduation System (Double Corner Layout)</title>
     <style>
         /* --- SECURITY --- */
         body {
@@ -224,8 +224,8 @@
                 /* --- LOGO BLOCK --- */
                 .logo-block {
                     position: absolute;
-                    /* STATE 1: IDLE - ABOVE TEXT */
-                    top: 38%; left: 50%; transform: translate(-50%, -50%);
+                    /* STATE 1: IDLE - Moved UP (35%) - Above Text */
+                    top: 35%; left: 50%; transform: translate(-50%, -50%);
                     z-index: 200;
                     transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
                     background: transparent;
@@ -237,9 +237,10 @@
                     transition: all 0.8s ease;
                 }
 
-                /* LIVE MODE (ON BORDER) */
+                /* LIVE MODE (ON TOP BORDER) */
                 .logo-block.live-mode {
-                    top: 7.5vh; 
+                    /* Matches roughly the top gap + half height of corners */
+                    top: 55px; 
                     transform: translate(-50%, -50%);
                     background: transparent;
                 }
@@ -252,31 +253,33 @@
                     width: 100%; height: 100%; display: flex; flex-direction: row-reverse; align-items: center;
                     background: rgba(0, 30, 20, 0.95); box-shadow: 0 0 100px rgba(0,0,0,1);
                     padding: 50px; box-sizing: border-box;
-                    /* NO MAIN BORDER - FIXES LOGO OVERLAP */
-                    border: none;
+                    /* NO MAIN BORDER */
+                    border: none; 
                     position: relative; opacity: 0; transition: opacity 0.5s ease;
                 }
                 .card.active { opacity: 1; }
 
-                /* --- DOUBLE CORNERS (THICK + THIN) --- */
+                /* --- DOUBLE CORNERS --- */
                 
-                /* Thick Outer Corner */
-                .corner-thick { position: absolute; width: 40px; height: 40px; border: 6px solid #d4af37; z-index: 20; }
+                /* 1. Thick Outer Corner */
+                .corner-thick { position: absolute; width: 50px; height: 50px; border: 6px solid #d4af37; z-index: 20; }
                 .tl { top: -6px; left: -6px; border-right: 0; border-bottom: 0; }
                 .tr { top: -6px; right: -6px; border-left: 0; border-bottom: 0; }
                 .bl { bottom: -6px; left: -6px; border-right: 0; border-top: 0; }
                 .br { bottom: -6px; right: -6px; border-left: 0; border-top: 0; }
 
-                /* Thin Inner Corner (Offset inside to create double effect) */
-                .corner-thin { position: absolute; width: 60px; height: 60px; border: 2px solid #d4af37; z-index: 20; }
-                .tl-in { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
-                .tr-in { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
-                .bl-in { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
-                .br-in { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
+                /* 2. Thin Inner Corner (Offset creates double effect) */
+                .corner-thin { position: absolute; width: 70px; height: 70px; border: 2px solid #ffe57f; z-index: 20; }
+                /* Offset inwards by 10px */
+                .tl-in { top: 8px; left: 8px; border-right: 0; border-bottom: 0; }
+                .tr-in { top: 8px; right: 8px; border-left: 0; border-bottom: 0; }
+                .bl-in { bottom: 8px; left: 8px; border-right: 0; border-top: 0; }
+                .br-in { bottom: 8px; right: 8px; border-left: 0; border-top: 0; }
 
+                /* IDLE TEXT (Below Logo) */
                 .idle-screen { 
                     position: absolute; 
-                    top: 58%; 
+                    top: 60%; 
                     left: 50%; transform: translate(-50%, -50%); text-align: center; color: #d4af37; transition: opacity 0.5s ease; opacity: 1; z-index: 5; 
                 }
                 .idle-screen.hidden { opacity: 0; }
