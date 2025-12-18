@@ -2,7 +2,7 @@
 <html lang="dv" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Graduation System (Final Design)</title>
+    <title>Graduation System (Final Fixed)</title>
     <style>
         /* --- SECURITY --- */
         body {
@@ -50,15 +50,18 @@
             border-top: 5px solid #d4af37; box-shadow: 0 0 10px rgba(0,0,0,0.1);
             display: flex; flex-direction: column; overflow-y: auto; position: relative;
         }
-        h2 { margin-top: 0; color: #004d40; text-align: center; font-family: 'Faruuma'; }
         
-        .launch-btn { background: #d32f2f; color: white; padding: 12px; width: 100%; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-family: 'Faruuma'; font-size: 16px; margin-bottom: 10px; border-bottom: 3px solid #b71c1c; }
+        /* Force font on elements */
+        h2, label, input, textarea, select, button { font-family: 'Faruuma', 'Times New Roman', serif; }
+        
+        h2 { margin-top: 0; color: #004d40; text-align: center; }
+        
+        .launch-btn { background: #d32f2f; color: white; padding: 12px; width: 100%; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px; margin-bottom: 10px; border-bottom: 3px solid #b71c1c; }
         .launch-btn:active { transform: translateY(2px); border-bottom: 1px solid #b71c1c; }
         
-        /* Input Fields */
         .file-box { background: #f1f8e9; padding: 10px; border-radius: 5px; border: 1px solid #81c784; margin-bottom: 10px; }
         label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 3px; }
-        input[type="file"], input[type="text"], textarea, select { width: 98%; padding: 8px; border: 1px solid #aaa; border-radius: 4px; font-size: 16px; font-family: 'Faruuma'; margin-bottom: 2px; }
+        input[type="file"], input[type="text"], textarea, select { width: 98%; padding: 8px; border: 1px solid #aaa; border-radius: 4px; font-size: 16px; margin-bottom: 2px; }
         
         .row { display: flex; gap: 15px; margin-bottom: 8px; align-items: flex-end; }
         .col { flex: 1; }
@@ -67,9 +70,9 @@
         .preview-container { display: flex; gap: 30px; align-items: center; justify-content: center; background: #fffde7; padding: 10px; border: 1px solid #fbc02d; border-radius: 5px; margin-top: auto; }
         #previewImg { height: 110px; width: 110px; object-fit: cover; border-radius: 50%; border: 3px solid #d4af37; background: #ddd; }
         #logoPreview { height: 60px; object-fit: contain; }
-        .manual-btn { background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; font-family: 'Faruuma'; margin-top: 5px; }
+        .manual-btn { background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; margin-top: 5px; }
         .controls { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
-        button.action { flex: 1; padding: 15px; font-size: 18px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-family: 'Faruuma'; color: white; transition: 0.2s; }
+        button.action { flex: 1; padding: 15px; font-size: 18px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; }
         .btn-live { background: #004d40; flex: 2; border: 2px solid #ffd700; color: #ffd700; font-size: 22px; }
         .btn-live:hover { background: #00695c; box-shadow: 0 0 10px #ffd700; }
         .btn-nav { background: #546e7a; }
@@ -220,16 +223,14 @@
                 #fsOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; justify-content: center; align-items: center; }
                 #fsBtn { padding: 20px 40px; font-size: 24px; font-weight: bold; cursor: pointer; background: #d4af37; border: 2px solid white; border-radius: 10px; color: #00281c; box-shadow: 0 0 20px rgba(212,175,55,0.8); }
 
-                /* --- LOGO BLOCK (CONTAINER) --- */
+                /* --- LOGO BLOCK --- */
                 .logo-block {
                     position: absolute;
                     /* IDLE STATE */
                     top: 25%; left: 50%; transform: translate(-50%, -50%);
-                    display: flex; flex-direction: column; align-items: center;
                     z-index: 200;
                     transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
                     background: transparent;
-                    padding: 10px; border-radius: 20px;
                 }
 
                 .logo-img { 
@@ -242,9 +243,8 @@
                 .logo-block.live-mode {
                     top: 7.5vh; 
                     transform: translate(-50%, -50%);
-                    /* Opaque background to hide the border line behind it */
-                    background: #00281c; 
-                    padding: 0 20px;
+                    /* No Background as requested - Logo floats on border */
+                    background: transparent;
                 }
                 .logo-block.live-mode .logo-img { height: 90px; }
 
@@ -254,27 +254,20 @@
                     width: 100%; height: 100%; display: flex; flex-direction: row-reverse; align-items: center;
                     background: rgba(0, 30, 20, 0.95); box-shadow: 0 0 100px rgba(0,0,0,1);
                     padding: 50px; box-sizing: border-box;
-                    /* Main thin border */
                     border: 1px solid #d4af37; 
                     position: relative; opacity: 0; transition: opacity 0.5s ease;
                 }
                 .card.active { opacity: 1; }
 
-                /* --- ROYAL CORNERS --- */
-                /* Thick Outer Corner */
-                .corner-thick { position: absolute; width: 80px; height: 80px; border: 6px solid #d4af37; z-index: 20; }
+                /* --- SHORTENED CORNERS (As requested) --- */
+                /* Thick Outer Corner - Reduced to 40px */
+                .corner-thick { position: absolute; width: 40px; height: 40px; border: 6px solid #d4af37; z-index: 20; }
                 .tl { top: -8px; left: -8px; border-right: 0; border-bottom: 0; }
                 .tr { top: -8px; right: -8px; border-left: 0; border-bottom: 0; }
                 .bl { bottom: -8px; left: -8px; border-right: 0; border-top: 0; }
                 .br { bottom: -8px; right: -8px; border-left: 0; border-top: 0; }
 
-                /* Long Thin Inner Corner - SHORTENED AS REQUESTED */
-                /* Reduced from 250px to 100px to avoid awkwardness */
-                .corner-thin { position: absolute; width: 100px; height: 100px; border: 1px solid #ffe57f; z-index: 19; opacity: 0.8; }
-                .tl-in { top: 15px; left: 15px; border-right: 0; border-bottom: 0; }
-                .tr-in { top: 15px; right: 15px; border-left: 0; border-bottom: 0; }
-                .bl-in { bottom: 15px; left: 15px; border-right: 0; border-top: 0; }
-                .br-in { bottom: 15px; right: 15px; border-left: 0; border-top: 0; }
+                /* Inner Thin Corner REMOVED */
 
                 .idle-screen { position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #d4af37; transition: opacity 0.5s ease; opacity: 1; z-index: 5; }
                 .idle-screen.hidden { opacity: 0; }
@@ -318,9 +311,6 @@
                 <div id="card" class="card">
                     <div class="corner-thick tl"></div><div class="corner-thick tr"></div>
                     <div class="corner-thick bl"></div><div class="corner-thick br"></div>
-                    
-                    <div class="corner-thin tl-in"></div><div class="corner-thin tr-in"></div>
-                    <div class="corner-thin bl-in"></div><div class="corner-thin br-in"></div>
 
                     <div class="photo-col"><img id="stuImg" src="https://via.placeholder.com/280?text=No+Photo"></div>
                     <div class="text-col">
@@ -445,43 +435,40 @@
         };
         reader.readAsDataURL(file);
     }
+    
+    // --- ROBUST FONT LOADING FOR CONTROL PANEL & TV ---
     document.getElementById('fontFile').onchange = e => {
         const file = e.target.files[0];
         if(!file) return;
+        
+        // Use FontFace API for Control Panel
         const reader = new FileReader();
         reader.onload = function(evt) {
-            currentFontData = evt.target.result;
-            const fontCss = `
-                @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:ital@0;1&display=swap');
-                @font-face { font-family: 'Faruuma'; src: url('${currentFontData}') format('truetype'); }
-                body, h1, .comm, h2, input, textarea, select, button { font-family: 'Faruuma', sans-serif !important; }
-            `;
-            
-            // 1. Update Editor
-            let editorStyle = document.getElementById('editor-font-style');
-            if(!editorStyle) {
-                editorStyle = document.createElement('style');
-                editorStyle.id = 'editor-font-style';
-                document.head.appendChild(editorStyle);
-            }
-            editorStyle.innerHTML = fontCss;
+            const fontData = evt.target.result;
+            currentFontData = fontData;
 
-            // 2. Update TV
+            // 1. Force load font into current document (Control Panel)
+            const newFont = new FontFace('Faruuma', `url(${fontData})`);
+            newFont.load().then(function(loadedFace) {
+                document.fonts.add(loadedFace);
+                // Force apply to all relevant elements
+                document.body.style.fontFamily = "'Faruuma', 'Times New Roman', serif";
+                const inputs = document.querySelectorAll('input, textarea, select, button, label, h2');
+                inputs.forEach(el => el.style.fontFamily = "'Faruuma', 'Times New Roman', serif");
+                
+                alert("✅ Font Updated on Control Panel!");
+            }).catch(function(error) {
+                console.error("Font loading failed:", error);
+            });
+
+            // 2. Prepare for TV Window (needs re-opening or update)
             if(tvWindow && !tvWindow.closed) {
-                let tvStyle = tvWindow.document.getElementById('dynamic-font-style');
-                if(!tvStyle) {
-                    tvStyle = tvWindow.document.createElement('style');
-                    tvStyle.id = 'dynamic-font-style';
-                    tvWindow.document.head.appendChild(tvStyle);
-                }
-                tvStyle.innerHTML = fontCss;
-                alert("✅ Font Updated on Control Panel & TV Screen!");
-            } else {
-                alert("✅ Font Loaded on Control Panel. Open TV Screen to apply there too.");
+                alert("Please Re-Open TV Screen to apply font there.");
             }
         };
         reader.readAsDataURL(file);
     };
+
     document.getElementById('csvFile').onchange = e => {
         const r = new FileReader();
         r.onload = ev => {
