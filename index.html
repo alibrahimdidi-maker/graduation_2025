@@ -2,8 +2,15 @@
 <html lang="dv" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Graduation System (Perfect Idle Logo)</title>
+    <title>Graduation System (Protected)</title>
     <style>
+        /* --- SECURITY: PREVENT SELECTION --- */
+        body {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+        }
+
         /* --- DEFAULT FONT SETUP --- */
         @font-face {
             font-family: 'Faruuma';
@@ -28,7 +35,7 @@
         .editor {
             flex: 1; background: white; padding: 25px; border-radius: 8px;
             border-top: 5px solid #d4af37; box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            display: flex; flex-direction: column; overflow-y: auto;
+            display: flex; flex-direction: column; overflow-y: auto; position: relative;
         }
 
         h2 { margin-top: 0; color: #004d40; text-align: center; font-family: 'Faruuma'; }
@@ -75,11 +82,20 @@
         .btn-clear:hover { background: #b71c1c; }
 
         #statusMsg { text-align: center; margin-top: 8px; font-weight: bold; color: green; font-size: 16px; }
+
+        /* --- COPYRIGHT FOOTER --- */
+        .copyright-text {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 11px;
+            color: #777;
+            font-family: 'Times New Roman', sans-serif;
+            border-top: 1px dashed #ccc;
+            padding-top: 5px;
+        }
     </style>
 </head>
-<body>
-
-<div class="main-layout">
+<body oncontextmenu="return false;"> <div class="main-layout">
     <div class="sidebar">
         <button class="launch-btn" onclick="openTV()">🖥️ 1. ޓީވީ ސްކްރީން ހުޅުވާ</button>
         <div id="connStatus" style="margin-top:0px; font-size:12px; color:red; font-weight:bold; text-align:center; margin-bottom:10px;">Not Connected</div>
@@ -136,10 +152,23 @@
             <button class="action btn-clear" onclick="clearTV()" title="Hide Info">X</button>
         </div>
         <div id="statusMsg">Ready</div>
+
+        <div class="copyright-text">
+            &copy; Copyright Reserved <b>Ali Ibrahim Didi (7791550)</b>
+        </div>
     </div>
 </div>
 
 <script>
+    // --- SECURITY: DISABLE SHORTCUTS & INSPECT ---
+    document.onkeydown = function(e) {
+        if(e.keyCode == 123) { return false; } // F12
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; } // Ctrl+Shift+I
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; } // Ctrl+Shift+C
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; } // Ctrl+Shift+J
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } // Ctrl+U
+    }
+
     let tvWindow = null;
     let students = [];
     let photoFiles = {};
@@ -172,6 +201,8 @@
                     display: flex; justify-content: center; align-items: center;
                     font-family: 'Faruuma', sans-serif;
                     cursor: none;
+                    /* Prevent Selection in TV */
+                    -webkit-user-select: none; -ms-user-select: none; user-select: none;
                 }
                 
                 /* --- LOGO ANIMATION & POSITION --- */
@@ -221,10 +252,10 @@
                 .bl { bottom: -6px; left: -6px; border-right: 0; border-top: 0; }
                 .br { bottom: -6px; right: -6px; border-left: 0; border-top: 0; }
 
-                /* Idle Screen Text - Adjusted to balance with higher Logo */
+                /* Idle Screen Text - Adjusted */
                 .idle-screen {
                     position: absolute; 
-                    top: 55%; /* Moved up slightly to follow the logo */
+                    top: 55%; 
                     left: 50%;
                     transform: translate(-50%, -50%);
                     text-align: center; color: #d4af37;
@@ -264,9 +295,14 @@
                 .crs-dv { font-size: 2.5em; color: #b2dfdb; margin-top: 5px; font-weight: bold; }
                 .crs-en { direction: ltr; text-align: left; font-family: 'Times New Roman', serif; font-style: italic; font-size: 2em; color: #80cbc4; margin-bottom: 20px; }
                 .comm { font-family: 'Faruuma'; background: rgba(212,175,55,0.15); border: 2px solid #d4af37; padding: 20px; font-size: 2.2em; color: #fff; border-radius: 10px; text-align: center; margin-top: 20px; width: 100%; box-sizing: border-box; text-shadow: 1px 1px 2px black; }
+                
+                /* Copyright on TV Screen (Subtle) */
+                .tv-copyright {
+                    position: absolute; bottom: 10px; right: 10px; font-size: 10px; color: rgba(255,255,255,0.3); font-family: sans-serif;
+                }
             </style>
         </head>
-        <body ondblclick="document.body.requestFullscreen()">
+        <body oncontextmenu="return false;">
             <img id="logo" class="uni-logo" style="display:none">
 
             <div id="idle" class="idle-screen">
@@ -288,6 +324,7 @@
                     </div>
                 </div>
             </div>
+            <div class="tv-copyright">© Ali Ibrahim Didi (7791550)</div>
         </body>
         </html>`;
 
