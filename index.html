@@ -2,7 +2,7 @@
 <html lang="dv" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Graduation System (Logo Above Text)</title>
+    <title>Graduation System (No Border Overlap)</title>
     <style>
         /* --- SECURITY --- */
         body {
@@ -232,7 +232,6 @@
                 }
 
                 .logo-img { 
-                    /* IDLE SIZE: Medium */
                     height: 180px; width: auto; 
                     filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
                     transition: all 0.8s ease;
@@ -248,25 +247,35 @@
 
                 /* CARD */
                 .card-container { position: relative; width: 90vw; max-width: 1500px; height: 85vh; display: flex; justify-content: center; align-items: center; }
+                
                 .card {
                     width: 100%; height: 100%; display: flex; flex-direction: row-reverse; align-items: center;
                     background: rgba(0, 30, 20, 0.95); box-shadow: 0 0 100px rgba(0,0,0,1);
                     padding: 50px; box-sizing: border-box;
-                    border: 1px solid #d4af37; 
+                    /* NO MAIN BORDER - FIXES LOGO OVERLAP */
+                    border: none;
                     position: relative; opacity: 0; transition: opacity 0.5s ease;
                 }
                 .card.active { opacity: 1; }
 
-                /* --- THICK BORDER CORNERS --- */
+                /* --- DOUBLE CORNERS (THICK + THIN) --- */
+                
+                /* Thick Outer Corner */
                 .corner-thick { position: absolute; width: 40px; height: 40px; border: 6px solid #d4af37; z-index: 20; }
-                .tl { top: -8px; left: -8px; border-right: 0; border-bottom: 0; }
-                .tr { top: -8px; right: -8px; border-left: 0; border-bottom: 0; }
-                .bl { bottom: -8px; left: -8px; border-right: 0; border-top: 0; }
-                .br { bottom: -8px; right: -8px; border-left: 0; border-top: 0; }
+                .tl { top: -6px; left: -6px; border-right: 0; border-bottom: 0; }
+                .tr { top: -6px; right: -6px; border-left: 0; border-bottom: 0; }
+                .bl { bottom: -6px; left: -6px; border-right: 0; border-top: 0; }
+                .br { bottom: -6px; right: -6px; border-left: 0; border-top: 0; }
+
+                /* Thin Inner Corner (Offset inside to create double effect) */
+                .corner-thin { position: absolute; width: 60px; height: 60px; border: 2px solid #d4af37; z-index: 20; }
+                .tl-in { top: 10px; left: 10px; border-right: 0; border-bottom: 0; }
+                .tr-in { top: 10px; right: 10px; border-left: 0; border-bottom: 0; }
+                .bl-in { bottom: 10px; left: 10px; border-right: 0; border-top: 0; }
+                .br-in { bottom: 10px; right: 10px; border-left: 0; border-top: 0; }
 
                 .idle-screen { 
                     position: absolute; 
-                    /* STATE 1: IDLE TEXT - BELOW LOGO */
                     top: 58%; 
                     left: 50%; transform: translate(-50%, -50%); text-align: center; color: #d4af37; transition: opacity 0.5s ease; opacity: 1; z-index: 5; 
                 }
@@ -311,6 +320,9 @@
                 <div id="card" class="card">
                     <div class="corner-thick tl"></div><div class="corner-thick tr"></div>
                     <div class="corner-thick bl"></div><div class="corner-thick br"></div>
+                    
+                    <div class="corner-thin tl-in"></div><div class="corner-thin tr-in"></div>
+                    <div class="corner-thin bl-in"></div><div class="corner-thin br-in"></div>
 
                     <div class="photo-col"><img id="stuImg" src="https://via.placeholder.com/280?text=No+Photo"></div>
                     <div class="text-col">
