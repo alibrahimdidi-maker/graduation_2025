@@ -2,104 +2,69 @@
 <html lang="dv" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Graduation System (Protected)</title>
+    <title>Graduation System (Royal Edition)</title>
     <style>
         /* --- SECURITY: PREVENT SELECTION --- */
         body {
             -webkit-user-select: none; -ms-user-select: none; user-select: none;
             margin: 0; padding: 0;
-            background: #00281c; /* Background for Login Screen */
-            font-family: 'Faruuma', 'Times New Roman', serif;
+            background: #00281c; font-family: 'Faruuma', 'Times New Roman', serif;
         }
 
-        /* --- FONT SETUP --- */
         @font-face {
             font-family: 'Faruuma';
             src: local('Faruuma'), local('Faruumaa'), url('Fonts/faruuma.ttf') format('truetype');
         }
 
-        /* --- LOGIN SCREEN STYLES --- */
+        /* --- LOGIN SCREEN --- */
         #loginOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #00281c; z-index: 10000;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            color: #d4af37;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; color: #d4af37;
         }
         #loginBox {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 40px; border-radius: 15px;
-            border: 2px solid #d4af37;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            background: rgba(255, 255, 255, 0.1); padding: 40px; border-radius: 15px;
+            border: 2px solid #d4af37; text-align: center; box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
         #passInput {
             padding: 10px; font-size: 20px; border-radius: 5px; border: none; 
-            text-align: center; width: 250px; margin-top: 15px;
-            font-family: sans-serif; 
+            text-align: center; width: 250px; margin-top: 15px; font-family: sans-serif; 
         }
         #loginBtn {
             margin-top: 15px; padding: 10px 30px; font-size: 18px; cursor: pointer; 
-            background: #d4af37; border: none; border-radius: 5px; 
-            font-weight: bold; color: #00281c; font-family: 'Faruuma';
+            background: #d4af37; border: none; border-radius: 5px; font-weight: bold; color: #00281c; font-family: 'Faruuma';
         }
         #loginBtn:hover { background: #ffd700; }
 
-        /* --- MAIN LAYOUT (HIDDEN INITIALLY) --- */
+        /* --- MAIN LAYOUT --- */
         .main-layout { 
-            display: none; /* HIDDEN BY DEFAULT */
-            gap: 15px; height: 96vh; max-width: 100%; margin: 0 auto; 
+            display: none; gap: 15px; height: 96vh; max-width: 100%; margin: 0 auto; 
             padding: 10px; box-sizing: border-box; background: #eceff1;
         }
-
         .sidebar {
             flex: 0 0 320px; background: white; padding: 15px; border-radius: 8px;
-            display: flex; flex-direction: column;
-            border-top: 5px solid #004d40; box-shadow: 2px 0 10px rgba(0,0,0,0.1); overflow-y: auto;
+            display: flex; flex-direction: column; border-top: 5px solid #004d40; box-shadow: 2px 0 10px rgba(0,0,0,0.1); overflow-y: auto;
         }
-
         .editor {
             flex: 1; background: white; padding: 25px; border-radius: 8px;
             border-top: 5px solid #d4af37; box-shadow: 0 0 10px rgba(0,0,0,0.1);
             display: flex; flex-direction: column; overflow-y: auto; position: relative;
         }
-
-        h2, h3 { margin-top: 0; color: #004d40; text-align: center; font-family: 'Faruuma'; }
-        h3 { border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-bottom: 10px; }
-
-        .launch-btn { 
-            background: #d32f2f; color: white; padding: 12px; width: 100%; 
-            border: none; border-radius: 5px; cursor: pointer; font-weight: bold; 
-            font-family: 'Faruuma'; font-size: 16px; margin-bottom: 10px;
-            border-bottom: 3px solid #b71c1c;
-        }
+        h2 { margin-top: 0; color: #004d40; text-align: center; font-family: 'Faruuma'; }
+        
+        .launch-btn { background: #d32f2f; color: white; padding: 12px; width: 100%; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-family: 'Faruuma'; font-size: 16px; margin-bottom: 10px; border-bottom: 3px solid #b71c1c; }
         .launch-btn:active { transform: translateY(2px); border-bottom: 1px solid #b71c1c; }
-
         .file-box { background: #f1f8e9; padding: 10px; border-radius: 5px; border: 1px solid #81c784; margin-bottom: 10px; }
         label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 3px; }
-        input[type="file"] { width: 100%; font-size: 11px; margin-bottom: 5px; }
-
-        input[type="text"], textarea, select { 
-            width: 98%; padding: 8px; border: 1px solid #aaa; border-radius: 4px; 
-            font-size: 16px; font-family: 'Faruuma'; margin-bottom: 2px;
-        }
-        select { flex: 1; font-size: 14px; outline: none; border-color: #004d40; }
-
+        input[type="file"], input[type="text"], textarea, select { width: 98%; padding: 8px; border: 1px solid #aaa; border-radius: 4px; font-size: 16px; font-family: 'Faruuma'; margin-bottom: 2px; }
         .row { display: flex; gap: 15px; margin-bottom: 8px; align-items: flex-end; }
         .col { flex: 1; }
         .dhi { direction: rtl; text-align: right; }
         .eng { direction: ltr; text-align: left; font-family: 'Times New Roman', serif; font-weight: bold; }
-
-        .preview-container {
-            display: flex; gap: 30px; align-items: center; justify-content: center;
-            background: #fffde7; padding: 10px; border: 1px solid #fbc02d; 
-            border-radius: 5px; margin-top: auto; 
-        }
+        .preview-container { display: flex; gap: 30px; align-items: center; justify-content: center; background: #fffde7; padding: 10px; border: 1px solid #fbc02d; border-radius: 5px; margin-top: auto; }
         #previewImg { height: 110px; width: 110px; object-fit: cover; border-radius: 50%; border: 3px solid #d4af37; background: #ddd; }
         #logoPreview { height: 60px; object-fit: contain; }
-
         .manual-btn { background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; font-family: 'Faruuma'; margin-top: 5px; }
-
         .controls { display: flex; gap: 10px; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee; }
         button.action { flex: 1; padding: 15px; font-size: 18px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-family: 'Faruuma'; color: white; transition: 0.2s; }
         .btn-live { background: #004d40; flex: 2; border: 2px solid #ffd700; color: #ffd700; font-size: 22px; }
@@ -107,15 +72,10 @@
         .btn-nav { background: #546e7a; }
         .btn-clear { background: #c62828; flex: 0.5; color: white; }
         .btn-clear:hover { background: #b71c1c; }
-
         .video-controls { background: #e3f2fd; padding: 15px; border-radius: 8px; border: 1px solid #90caf9; margin-top: 20px; }
         .btn-vid { font-size: 14px; padding: 8px; margin-top: 5px; border:none; border-radius:4px; cursor:pointer; font-weight:bold; color:white; width: 100%; margin-bottom: 10px; }
-
         #statusMsg { text-align: center; margin-top: 8px; font-weight: bold; color: green; font-size: 16px; }
-
-        .copyright-text {
-            margin-top: 10px; text-align: center; font-size: 11px; color: #777; font-family: 'Times New Roman', sans-serif; border-top: 1px dashed #ccc; padding-top: 5px;
-        }
+        .copyright-text { margin-top: 10px; text-align: center; font-size: 11px; color: #777; font-family: 'Times New Roman', sans-serif; border-top: 1px dashed #ccc; padding-top: 5px; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -124,15 +84,12 @@
         <div id="loginBox">
             <h1 style="margin-bottom: 5px;">Graduation System</h1>
             <p style="font-size: 14px; margin-bottom: 20px;">Protected File</p>
-            
             <input type="password" id="passInput" placeholder="Password">
             <br>
             <button id="loginBtn" onclick="checkPassword()">Login</button>
             <p id="loginError" style="color: #ff5252; display: none; margin-top: 10px; font-weight: bold;">Incorrect Password!</p>
         </div>
-        <div style="position:absolute; bottom:20px; font-size:12px; opacity:0.5;">
-            &copy; Ali Ibrahim Didi (7791550)
-        </div>
+        <div style="position:absolute; bottom:20px; font-size:12px; opacity:0.5;">&copy; Ali Ibrahim Didi (7791550)</div>
     </div>
 
     <div class="main-layout" id="mainApp">
@@ -146,6 +103,9 @@
                 <label>3. ލޯގޯ (PNG):</label><input type="file" id="logoFile" accept="image/*">
                 <label>4. ފޮންޓް (TTF):</label><input type="file" id="fontFile" accept=".ttf, .otf">
             </div>
+
+            <label>ޔުނިވަރސިޓީގެ ނަން (English):</label>
+            <input type="text" id="uniNameInput" value="THE MALDIVES NATIONAL UNIVERSITY" style="text-align:left;">
 
             <label>ނަން ހޯދާ:</label>
             <input type="text" id="search" placeholder="Type to search..." onkeyup="filterList()">
@@ -173,8 +133,7 @@
 
             <div class="preview-container">
                 <div style="text-align:center;">
-                    <span style="font-size:11px;">Logo</span><br>
-                    <img id="logoPreview" alt="-">
+                    <span style="font-size:11px;">Logo</span><br><img id="logoPreview" alt="-">
                 </div>
                 <div style="text-align:center;">
                     <span id="pStat" style="font-size:11px; display:block; font-weight:bold;">No Photo</span>
@@ -198,63 +157,34 @@
                 <label>1. Hard Disk Video:</label>
                 <input type="file" id="videoLocal" accept="video/*" style="margin-bottom:5px;">
                 <button class="btn-vid" style="background:#e65100;" onclick="playLocalVideo()">▶ Play Local Video</button>
-
                 <label style="margin-top:10px;">2. YouTube Link:</label>
                 <input type="text" id="ytLink" placeholder="Paste YouTube link here..." style="font-family:sans-serif; text-align:left;">
                 <button class="btn-vid" style="background:#c62828;" onclick="playYoutube()">▶ Play YouTube</button>
-
                 <button class="btn-vid" style="background:#333; margin-top:15px;" onclick="stopVideo()">⏹ Stop / Clear Video</button>
             </div>
 
-            <div class="copyright-text">
-                &copy; Copyright Reserved <b>Ali Ibrahim Didi (7791550)</b>
-            </div>
+            <div class="copyright-text">&copy; Copyright Reserved <b>Ali Ibrahim Didi (7791550)</b></div>
         </div>
     </div>
 
 <script>
-    // ----------------------------------------------------
-    // 1. PASSWORD & SECURITY LOGIC
-    // ----------------------------------------------------
     function checkPassword() {
-        const inputField = document.getElementById('passInput');
-        const errorMsg = document.getElementById('loginError');
-        
-        // Trim removes accidental spaces
-        const password = inputField.value.trim();
-        const correct = "7791550"; 
-
-        if (password === correct) {
-            // Unlock
+        const password = document.getElementById('passInput').value.trim();
+        if (password === "7791550") {
             document.getElementById('loginOverlay').style.display = 'none';
-            const app = document.getElementById('mainApp');
-            app.style.display = 'flex';
-            document.body.style.background = '#eceff1'; // Restore background
+            document.getElementById('mainApp').style.display = 'flex';
+            document.body.style.background = '#eceff1';
         } else {
-            // Error
-            errorMsg.style.display = 'block';
-            inputField.value = '';
-            inputField.focus();
+            document.getElementById('loginError').style.display = 'block';
+            document.getElementById('passInput').value = '';
         }
     }
-
-    // Allow Enter key to submit password
-    document.getElementById('passInput').addEventListener("keyup", function(event) {
-        if (event.key === "Enter") {
-            checkPassword();
-        }
-    });
-
-    // Block F12, Inspect, etc.
+    document.getElementById('passInput').addEventListener("keyup", function(e) { if (e.key === "Enter") checkPassword(); });
     document.onkeydown = function(e) {
         if(e.keyCode == 123) return false; 
-        if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false;
-        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        if(e.ctrlKey && (e.key === 'u' || e.key === 'U' || (e.shiftKey && (e.key === 'i' || e.key === 'I' || e.key === 'j' || e.key === 'J' || e.key === 'c' || e.key === 'C')))) return false;
     }
 
-    // ----------------------------------------------------
-    // 2. MAIN APPLICATION LOGIC
-    // ----------------------------------------------------
     let tvWindow = null;
     let students = [];
     let photoFiles = {};
@@ -268,6 +198,9 @@
 
         let fontCSS = `url('Fonts/faruuma.ttf') format('truetype')`;
         if (currentFontData) fontCSS = `url('${currentFontData}') format('truetype')`;
+
+        // Get University Name
+        let uniName = document.getElementById('uniNameInput').value;
 
         const designHTML = `
         <!DOCTYPE html>
@@ -287,52 +220,77 @@
                     cursor: none; user-select: none;
                 }
                 
-                #fsOverlay {
-                    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                    background: rgba(0,0,0,0.8); z-index: 9999;
-                    display: flex; justify-content: center; align-items: center;
-                }
-                #fsBtn {
-                    padding: 20px 40px; font-size: 24px; font-weight: bold; cursor: pointer;
-                    background: #d4af37; border: 2px solid white; border-radius: 10px;
-                    color: #00281c; box-shadow: 0 0 20px rgba(212,175,55,0.8);
-                }
+                #fsOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+                #fsBtn { padding: 20px 40px; font-size: 24px; font-weight: bold; cursor: pointer; background: #d4af37; border: 2px solid white; border-radius: 10px; color: #00281c; box-shadow: 0 0 20px rgba(212,175,55,0.8); }
 
-                .uni-logo { 
-                    position: absolute; 
-                    top: 25%; left: 50%; transform: translate(-50%, -50%); 
-                    height: 160px; z-index: 200; 
-                    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+                /* --- LOGO BLOCK (CONTAINER) --- */
+                .logo-block {
+                    position: absolute;
+                    /* IDLE STATE */
+                    top: 25%; left: 50%; transform: translate(-50%, -50%);
+                    display: flex; flex-direction: column; align-items: center;
+                    z-index: 200;
                     transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+                    /* Background is mostly transparent in idle, but set to match bg for safety */
+                    background: transparent;
+                    padding: 10px; border-radius: 20px;
                 }
-                .uni-logo.live-mode { top: 7.5vh; height: 80px; transform: translate(-50%, -50%); }
 
-                .card-container {
-                    position: relative; width: 90vw; max-width: 1500px; height: 85vh;
-                    display: flex; justify-content: center; align-items: center;
+                .logo-img { 
+                    height: 160px; width: auto; 
+                    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+                    transition: all 0.8s ease;
                 }
+
+                .uni-name-text {
+                    color: white; font-family: 'Cinzel', serif; font-weight: bold;
+                    font-size: 1.5em; margin-top: 15px; letter-spacing: 2px;
+                    text-shadow: 0 2px 5px black; text-transform: uppercase;
+                    text-align: center;
+                    transition: all 0.8s ease;
+                }
+
+                /* LIVE MODE (ON BORDER) */
+                .logo-block.live-mode {
+                    top: 7.5vh; 
+                    transform: translate(-50%, -50%);
+                    /* Masking the border line behind it */
+                    background: #00281c; 
+                    padding: 0 20px;
+                }
+                .logo-block.live-mode .logo-img { height: 90px; }
+                .logo-block.live-mode .uni-name-text {
+                    font-size: 0.9em; margin-top: 5px; margin-bottom: 5px; letter-spacing: 1px;
+                }
+
+                /* CARD */
+                .card-container { position: relative; width: 90vw; max-width: 1500px; height: 85vh; display: flex; justify-content: center; align-items: center; }
                 .card {
-                    width: 100%; height: 100%;
-                    display: flex; flex-direction: row-reverse; align-items: center;
-                    background: rgba(0, 30, 20, 0.95);
-                    box-shadow: 0 0 100px rgba(0,0,0,1);
+                    width: 100%; height: 100%; display: flex; flex-direction: row-reverse; align-items: center;
+                    background: rgba(0, 30, 20, 0.95); box-shadow: 0 0 100px rgba(0,0,0,1);
                     padding: 50px; box-sizing: border-box;
-                    border: 1px solid #d4af37;
-                    position: relative;
-                    opacity: 0; transition: opacity 0.5s ease;
+                    /* This is the main thin border */
+                    border: 1px solid #d4af37; 
+                    position: relative; opacity: 0; transition: opacity 0.5s ease;
                 }
                 .card.active { opacity: 1; }
 
-                .corner { position: absolute; width: 60px; height: 60px; border: 5px solid #d4af37; }
-                .tl { top: -6px; left: -6px; border-right: 0; border-bottom: 0; }
-                .tr { top: -6px; right: -6px; border-left: 0; border-bottom: 0; }
-                .bl { bottom: -6px; left: -6px; border-right: 0; border-top: 0; }
-                .br { bottom: -6px; right: -6px; border-left: 0; border-top: 0; }
+                /* --- NEW ROYAL CORNERS --- */
+                /* Thick Outer Corner */
+                .corner-thick { position: absolute; width: 80px; height: 80px; border: 6px solid #d4af37; z-index: 20; }
+                .tl { top: -8px; left: -8px; border-right: 0; border-bottom: 0; }
+                .tr { top: -8px; right: -8px; border-left: 0; border-bottom: 0; }
+                .bl { bottom: -8px; left: -8px; border-right: 0; border-top: 0; }
+                .br { bottom: -8px; right: -8px; border-left: 0; border-top: 0; }
 
-                .idle-screen {
-                    position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%);
-                    text-align: center; color: #d4af37; transition: opacity 0.5s ease; opacity: 1; z-index: 5;
-                }
+                /* Long Thin Inner Corner (5 inches figuratively -> 200px) */
+                .corner-thin { position: absolute; width: 250px; height: 250px; border: 1px solid #ffe57f; z-index: 19; opacity: 0.8; }
+                .tl-in { top: 15px; left: 15px; border-right: 0; border-bottom: 0; }
+                .tr-in { top: 15px; right: 15px; border-left: 0; border-bottom: 0; }
+                .bl-in { bottom: 15px; left: 15px; border-right: 0; border-top: 0; }
+                .br-in { bottom: 15px; right: 15px; border-left: 0; border-top: 0; }
+
+                .idle-screen { position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #d4af37; transition: opacity 0.5s ease; opacity: 1; z-index: 5; }
                 .idle-screen.hidden { opacity: 0; }
                 .ceremony-title { font-family: 'Cinzel', serif; font-size: 5em; letter-spacing: 5px; border-bottom: 3px solid #d4af37; padding-bottom: 20px; }
                 .ceremony-year { font-family: 'Times New Roman', serif; font-size: 3em; margin-top: 20px; color: #fff; }
@@ -349,34 +307,36 @@
                 .crs-en { direction: ltr; text-align: left; font-family: 'Times New Roman', serif; font-style: italic; font-size: 2em; color: #80cbc4; margin-bottom: 20px; }
                 .comm { font-family: 'Faruuma'; background: rgba(212,175,55,0.15); border: 2px solid #d4af37; padding: 20px; font-size: 2.2em; color: #fff; border-radius: 10px; text-align: center; margin-top: 20px; width: 100%; box-sizing: border-box; }
 
-                #videoLayer {
-                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                    background: black; z-index: 500; display: none;
-                    justify-content: center; align-items: center;
-                }
+                #videoLayer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: black; z-index: 500; display: none; justify-content: center; align-items: center; }
                 #videoLayer video, #videoLayer iframe { width: 100%; height: 100%; border: none; }
-                
                 .tv-copyright { position: absolute; bottom: 10px; right: 10px; font-size: 10px; color: rgba(255,255,255,0.3); font-family: sans-serif; z-index: 50; }
             </style>
             <script>
-                function goFullScreen() {
-                    document.documentElement.requestFullscreen();
-                    document.getElementById('fsOverlay').style.display = 'none';
-                }
+                function goFullScreen() { document.documentElement.requestFullscreen(); document.getElementById('fsOverlay').style.display = 'none'; }
             <\/script>
         </head>
         <body oncontextmenu="return false;">
             <div id="fsOverlay"><button id="fsBtn" onclick="goFullScreen()">⛶ GO FULL SCREEN</button></div>
             <div id="videoLayer"></div>
-            <img id="logo" class="uni-logo" style="display:none">
+            
+            <div id="logoBlock" class="logo-block">
+                <img id="logo" class="logo-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+                <div class="uni-name-text">${uniName}</div>
+            </div>
+
             <div id="idle" class="idle-screen">
                 <div class="ceremony-title">GRADUATION CEREMONY</div>
                 <div class="ceremony-year">2024</div>
             </div>
+
             <div class="card-container">
                 <div id="card" class="card">
-                    <div class="corner tl"></div><div class="corner tr"></div>
-                    <div class="corner bl"></div><div class="corner br"></div>
+                    <div class="corner-thick tl"></div><div class="corner-thick tr"></div>
+                    <div class="corner-thick bl"></div><div class="corner-thick br"></div>
+                    
+                    <div class="corner-thin tl-in"></div><div class="corner-thin tr-in"></div>
+                    <div class="corner-thin bl-in"></div><div class="corner-thin br-in"></div>
+
                     <div class="photo-col"><img id="stuImg" src="https://via.placeholder.com/280?text=No+Photo"></div>
                     <div class="text-col">
                         <h1 id="tnD">...</h1><h2 id="tnE">...</h2>
@@ -418,11 +378,9 @@
             if(currentPhotoData) { img.src = currentPhotoData; img.style.display='block'; }
             else { img.src = 'https://via.placeholder.com/280x280/00281c/d4af37?text=No+Photo'; }
 
-            if(currentLogoData) {
-                const l = doc.getElementById('logo');
-                l.src = currentLogoData; l.style.display = 'block';
-                l.classList.add('live-mode');
-            }
+            // Logo Block Animation
+            const lb = doc.getElementById('logoBlock');
+            if(lb) lb.classList.add('live-mode');
 
             doc.getElementById('idle').classList.add('hidden');
             setTimeout(() => { doc.getElementById('card').classList.add('active'); }, 300);
@@ -437,46 +395,6 @@
         }
     }
 
-    function playLocalVideo() {
-        if(!tvWindow || tvWindow.closed) { alert("TV Closed!"); return; }
-        const file = document.getElementById('videoLocal').files[0];
-        if(!file) { alert("Select a video file first!"); return; }
-
-        const fileURL = URL.createObjectURL(file);
-        const vLayer = tvWindow.document.getElementById('videoLayer');
-        
-        vLayer.innerHTML = `<video src="${fileURL}" autoplay controls></video>`;
-        vLayer.style.display = 'flex';
-        document.getElementById('statusMsg').innerText = "Playing Local Video...";
-        document.getElementById('statusMsg').style.color = "orange";
-    }
-
-    function playYoutube() {
-        if(!tvWindow || tvWindow.closed) { alert("TV Closed!"); return; }
-        const url = document.getElementById('ytLink').value;
-        if(!url) { alert("Enter YouTube URL!"); return; }
-
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-        const match = url.match(regExp);
-        const videoId = (match && match[2].length === 11) ? match[2] : null;
-
-        if(!videoId) { alert("Invalid YouTube URL"); return; }
-
-        const vLayer = tvWindow.document.getElementById('videoLayer');
-        vLayer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-        vLayer.style.display = 'flex';
-        document.getElementById('statusMsg').innerText = "Playing YouTube...";
-        document.getElementById('statusMsg').style.color = "red";
-    }
-
-    function stopVideo() {
-        if(!tvWindow || tvWindow.closed) return;
-        const vLayer = tvWindow.document.getElementById('videoLayer');
-        vLayer.innerHTML = '';
-        vLayer.style.display = 'none';
-        document.getElementById('statusMsg').innerText = "Video Stopped";
-    }
-
     function clearTV() {
         if(!tvWindow || tvWindow.closed) return;
         const doc = tvWindow.document;
@@ -484,15 +402,48 @@
         doc.getElementById('card').classList.remove('active');
         setTimeout(() => { doc.getElementById('idle').classList.remove('hidden'); }, 300);
         
-        const l = doc.getElementById('logo');
-        if(l) l.classList.remove('live-mode');
+        // Reset Logo Block
+        const lb = doc.getElementById('logoBlock');
+        if(lb) lb.classList.remove('live-mode');
 
         stopVideo();
-
         document.getElementById('statusMsg').innerText = "Screen Cleared";
         document.getElementById('statusMsg').style.color = "orange";
     }
 
+    // --- UTILITIES ---
+    function playLocalVideo() {
+        if(!tvWindow || tvWindow.closed) { alert("TV Closed!"); return; }
+        const file = document.getElementById('videoLocal').files[0];
+        if(!file) { alert("Select a video file first!"); return; }
+        const fileURL = URL.createObjectURL(file);
+        const vLayer = tvWindow.document.getElementById('videoLayer');
+        vLayer.innerHTML = `<video src="${fileURL}" autoplay controls></video>`;
+        vLayer.style.display = 'flex';
+        document.getElementById('statusMsg').innerText = "Playing Local Video...";
+        document.getElementById('statusMsg').style.color = "orange";
+    }
+    function playYoutube() {
+        if(!tvWindow || tvWindow.closed) { alert("TV Closed!"); return; }
+        const url = document.getElementById('ytLink').value;
+        if(!url) { alert("Enter YouTube URL!"); return; }
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        const videoId = (match && match[2].length === 11) ? match[2] : null;
+        if(!videoId) { alert("Invalid YouTube URL"); return; }
+        const vLayer = tvWindow.document.getElementById('videoLayer');
+        vLayer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        vLayer.style.display = 'flex';
+        document.getElementById('statusMsg').innerText = "Playing YouTube...";
+        document.getElementById('statusMsg').style.color = "red";
+    }
+    function stopVideo() {
+        if(!tvWindow || tvWindow.closed) return;
+        const vLayer = tvWindow.document.getElementById('videoLayer');
+        vLayer.innerHTML = '';
+        vLayer.style.display = 'none';
+        document.getElementById('statusMsg').innerText = "Video Stopped";
+    }
     function processPhoto(file, cb) {
         const reader = new FileReader();
         reader.onload = e => {
@@ -516,27 +467,8 @@
         const reader = new FileReader();
         reader.onload = function(evt) {
             currentFontData = evt.target.result;
-            const fontCss = `
-                @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:ital@0;1&display=swap');
-                @font-face { font-family: 'Faruuma'; src: url('${currentFontData}') format('truetype'); }
-                body, h1, .comm, h2, input, textarea { font-family: 'Faruuma', sans-serif !important; }
-            `;
-            let editorStyle = document.getElementById('dynamic-editor-font');
-            if(!editorStyle) {
-                editorStyle = document.createElement('style');
-                editorStyle.id = 'dynamic-editor-font';
-                document.head.appendChild(editorStyle);
-            }
-            editorStyle.innerHTML = fontCss;
             if(tvWindow && !tvWindow.closed) {
-                let tvStyle = tvWindow.document.getElementById('dynamic-font-style');
-                if(!tvStyle) {
-                    tvStyle = tvWindow.document.createElement('style');
-                    tvStyle.id = 'dynamic-font-style';
-                    tvWindow.document.head.appendChild(tvStyle);
-                }
-                tvStyle.innerHTML = fontCss;
-                alert("✅ Font Updated on TV Screen!");
+                alert("✅ Font Loaded. Re-open TV Screen to apply.");
             }
         };
         reader.readAsDataURL(file);
@@ -574,8 +506,8 @@
         processPhoto(e.target.files[0], d => {
             currentLogoData = d; document.getElementById('logoPreview').src = d;
             if(tvWindow && !tvWindow.closed) {
-                const l = tvWindow.document.getElementById('logo');
-                l.src = d; l.style.display = 'block';
+                let l = tvWindow.document.getElementById('logo');
+                if(l) l.src = d;
             }
         });
     };
