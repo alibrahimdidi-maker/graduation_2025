@@ -2,22 +2,18 @@
 <html lang="dv" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Graduation System (Protected)</title>
+    <title>Graduation System (Video & Fullscreen)</title>
     <style>
-        /* --- SECURITY: PREVENT SELECTION --- */
-        body {
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10 and IE 11 */
-            user-select: none; /* Standard syntax */
-        }
+        /* --- SECURITY --- */
+        body { -webkit-user-select: none; -ms-user-select: none; user-select: none; }
 
-        /* --- DEFAULT FONT SETUP --- */
+        /* --- FONT SETUP --- */
         @font-face {
             font-family: 'Faruuma';
             src: local('Faruuma'), local('Faruumaa'), url('Fonts/faruuma.ttf') format('truetype');
         }
 
-        /* --- DESKTOP LAYOUT --- */
+        /* --- LAYOUT --- */
         body { 
             font-family: 'Faruuma', 'Times New Roman', serif; 
             background: #eceff1; padding: 10px; margin: 0; 
@@ -29,7 +25,7 @@
         .sidebar {
             flex: 0 0 320px; background: white; padding: 15px; border-radius: 8px;
             display: flex; flex-direction: column;
-            border-top: 5px solid #004d40; box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            border-top: 5px solid #004d40; box-shadow: 2px 0 10px rgba(0,0,0,0.1); overflow-y: auto;
         }
 
         .editor {
@@ -38,7 +34,8 @@
             display: flex; flex-direction: column; overflow-y: auto; position: relative;
         }
 
-        h2 { margin-top: 0; color: #004d40; text-align: center; font-family: 'Faruuma'; }
+        h2, h3 { margin-top: 0; color: #004d40; text-align: center; font-family: 'Faruuma'; }
+        h3 { border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-bottom: 10px; }
 
         .launch-btn { 
             background: #d32f2f; color: white; padding: 12px; width: 100%; 
@@ -81,21 +78,20 @@
         .btn-clear { background: #c62828; flex: 0.5; color: white; }
         .btn-clear:hover { background: #b71c1c; }
 
+        /* Video Control Styles */
+        .video-controls { background: #e3f2fd; padding: 15px; border-radius: 8px; border: 1px solid #90caf9; margin-top: 20px; }
+        .btn-vid { font-size: 14px; padding: 8px; margin-top: 5px; border:none; border-radius:4px; cursor:pointer; font-weight:bold; color:white; width: 100%; margin-bottom: 10px; }
+
         #statusMsg { text-align: center; margin-top: 8px; font-weight: bold; color: green; font-size: 16px; }
 
-        /* --- COPYRIGHT FOOTER --- */
         .copyright-text {
-            margin-top: 10px;
-            text-align: center;
-            font-size: 11px;
-            color: #777;
-            font-family: 'Times New Roman', sans-serif;
-            border-top: 1px dashed #ccc;
-            padding-top: 5px;
+            margin-top: 10px; text-align: center; font-size: 11px; color: #777; font-family: 'Times New Roman', sans-serif; border-top: 1px dashed #ccc; padding-top: 5px;
         }
     </style>
 </head>
-<body oncontextmenu="return false;"> <div class="main-layout">
+<body oncontextmenu="return false;">
+
+<div class="main-layout">
     <div class="sidebar">
         <button class="launch-btn" onclick="openTV()">🖥️ 1. ޓީވީ ސްކްރީން ހުޅުވާ</button>
         <div id="connStatus" style="margin-top:0px; font-size:12px; color:red; font-weight:bold; text-align:center; margin-bottom:10px;">Not Connected</div>
@@ -153,6 +149,20 @@
         </div>
         <div id="statusMsg">Ready</div>
 
+        <div class="video-controls">
+            <h3>🎥 Video Player</h3>
+            
+            <label>1. Hard Disk Video:</label>
+            <input type="file" id="videoLocal" accept="video/*" style="margin-bottom:5px;">
+            <button class="btn-vid" style="background:#e65100;" onclick="playLocalVideo()">▶ Play Local Video</button>
+
+            <label style="margin-top:10px;">2. YouTube Link:</label>
+            <input type="text" id="ytLink" placeholder="Paste YouTube link here..." style="font-family:sans-serif; text-align:left;">
+            <button class="btn-vid" style="background:#c62828;" onclick="playYoutube()">▶ Play YouTube</button>
+
+            <button class="btn-vid" style="background:#333; margin-top:15px;" onclick="stopVideo()">⏹ Stop / Clear Video</button>
+        </div>
+
         <div class="copyright-text">
             &copy; Copyright Reserved <b>Ali Ibrahim Didi (7791550)</b>
         </div>
@@ -160,13 +170,11 @@
 </div>
 
 <script>
-    // --- SECURITY: DISABLE SHORTCUTS & INSPECT ---
+    // --- SECURITY ---
     document.onkeydown = function(e) {
-        if(e.keyCode == 123) { return false; } // F12
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; } // Ctrl+Shift+I
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; } // Ctrl+Shift+C
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; } // Ctrl+Shift+J
-        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } // Ctrl+U
+        if(e.keyCode == 123) return false; 
+        if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false;
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
     }
 
     let tvWindow = null;
@@ -176,14 +184,13 @@
     let currentLogoData = null;
     let currentFontData = null;
 
+    // --- 1. OPEN TV SCREEN ---
     function openTV() {
         tvWindow = window.open('', 'GradTV', 'width=1280,height=720,menubar=no,toolbar=no');
         if(!tvWindow) { alert("⚠️ Please Allow Popups!"); return; }
 
         let fontCSS = `url('Fonts/faruuma.ttf') format('truetype')`;
-        if (currentFontData) {
-            fontCSS = `url('${currentFontData}') format('truetype')`;
-        }
+        if (currentFontData) fontCSS = `url('${currentFontData}') format('truetype')`;
 
         const designHTML = `
         <!DOCTYPE html>
@@ -200,37 +207,36 @@
                     background-image: radial-gradient(circle at center, rgba(0,0,0,0) 0%, #000 100%);
                     display: flex; justify-content: center; align-items: center;
                     font-family: 'Faruuma', sans-serif;
-                    cursor: none;
-                    /* Prevent Selection in TV */
-                    -webkit-user-select: none; -ms-user-select: none; user-select: none;
+                    cursor: none; user-select: none;
                 }
                 
-                /* --- LOGO ANIMATION & POSITION --- */
+                /* FULLSCREEN BUTTON OVERLAY */
+                #fsOverlay {
+                    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.8); z-index: 9999;
+                    display: flex; justify-content: center; align-items: center;
+                }
+                #fsBtn {
+                    padding: 20px 40px; font-size: 24px; font-weight: bold; cursor: pointer;
+                    background: #d4af37; border: 2px solid white; border-radius: 10px;
+                    color: #00281c; box-shadow: 0 0 20px rgba(212,175,55,0.8);
+                }
+
+                /* LOGO */
                 .uni-logo { 
                     position: absolute; 
-                    /* STATE 1: IDLE - Moved HIGHER (25%) */
-                    top: 25%; 
-                    left: 50%; 
-                    transform: translate(-50%, -50%); 
-                    /* SIZE: Smaller (160px) */
-                    height: 160px; 
-                    z-index: 200; 
+                    top: 25%; left: 50%; transform: translate(-50%, -50%); 
+                    height: 160px; z-index: 200; 
                     filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
                     transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
                 }
+                .uni-logo.live-mode { top: 7.5vh; height: 80px; transform: translate(-50%, -50%); }
 
-                /* STATE 2: ACTIVE - Smaller & On Border */
-                .uni-logo.live-mode {
-                    top: 7.5vh; 
-                    height: 80px; 
-                    transform: translate(-50%, -50%); 
-                }
-
+                /* CARD */
                 .card-container {
                     position: relative; width: 90vw; max-width: 1500px; height: 85vh;
                     display: flex; justify-content: center; align-items: center;
                 }
-
                 .card {
                     width: 100%; height: 100%;
                     display: flex; flex-direction: row-reverse; align-items: center;
@@ -243,66 +249,57 @@
                 }
                 .card.active { opacity: 1; }
 
-                .corner {
-                    position: absolute; width: 60px; height: 60px;
-                    border: 5px solid #d4af37; pointer-events: none; z-index: 20;
-                }
+                /* Corners */
+                .corner { position: absolute; width: 60px; height: 60px; border: 5px solid #d4af37; }
                 .tl { top: -6px; left: -6px; border-right: 0; border-bottom: 0; }
                 .tr { top: -6px; right: -6px; border-left: 0; border-bottom: 0; }
                 .bl { bottom: -6px; left: -6px; border-right: 0; border-top: 0; }
                 .br { bottom: -6px; right: -6px; border-left: 0; border-top: 0; }
 
-                /* Idle Screen Text - Adjusted */
+                /* IDLE TEXT */
                 .idle-screen {
-                    position: absolute; 
-                    top: 55%; 
-                    left: 50%;
-                    transform: translate(-50%, -50%);
-                    text-align: center; color: #d4af37;
-                    transition: opacity 0.5s ease; opacity: 1; z-index: 5;
+                    position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%);
+                    text-align: center; color: #d4af37; transition: opacity 0.5s ease; opacity: 1; z-index: 5;
                 }
                 .idle-screen.hidden { opacity: 0; }
+                .ceremony-title { font-family: 'Cinzel', serif; font-size: 5em; letter-spacing: 5px; border-bottom: 3px solid #d4af37; padding-bottom: 20px; }
+                .ceremony-year { font-family: 'Times New Roman', serif; font-size: 3em; margin-top: 20px; color: #fff; }
 
-                .ceremony-title {
-                    font-family: 'Cinzel', serif; font-size: 5em;
-                    letter-spacing: 5px; text-shadow: 0 5px 15px black;
-                    border-bottom: 3px solid #d4af37; padding-bottom: 20px;
-                    display: inline-block;
-                }
-                .ceremony-year {
-                    font-family: 'Times New Roman', serif; font-size: 3em; margin-top: 20px; color: #fff;
-                }
-
-                .photo-col { 
-                    flex: 0 0 320px; 
-                    display: flex; justify-content: center;
-                    transform: translateX(-40px); 
-                }
-
-                #stuImg { 
-                    width: 260px; height: 260px; 
-                    object-fit: cover; border-radius: 50%; 
-                    border: 5px solid #d4af37; background: #000; 
-                    box-shadow: 0 15px 40px rgba(0,0,0,0.8);
-                }
-
+                /* STUDENT DATA */
+                .photo-col { flex: 0 0 320px; display: flex; justify-content: center; transform: translateX(-40px); }
+                #stuImg { width: 260px; height: 260px; object-fit: cover; border-radius: 50%; border: 5px solid #d4af37; background: #000; box-shadow: 0 15px 40px rgba(0,0,0,0.8); }
                 .text-col { flex: 1; text-align: right; padding-right: 30px; color: white; display: flex; flex-direction: column; justify-content: center; }
                 
-                h1 { font-family: 'Faruuma', sans-serif; font-size: 5em; margin: 0; color: white; text-shadow: 2px 2px 4px black; line-height: 1.1; }
-                h2 { direction: ltr; text-align: left; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 3em; color: #d4af37; margin: 5px 0 15px 0; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #d4af37; display: inline-block; width: 100%; }
+                h1 { font-family: 'Faruuma', sans-serif; font-size: 5em; margin: 0; color: white; line-height: 1.1; }
+                h2 { direction: ltr; text-align: left; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 3em; color: #d4af37; margin: 5px 0 15px 0; text-transform: uppercase; border-bottom: 2px solid #d4af37; display: inline-block; width: 100%; }
                 .fac-dv { font-size: 2em; color: #fff9c4; margin-top: 10px; }
-                .fac-en { direction: ltr; text-align: left; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 1.6em; color: #fff59d; text-transform: uppercase; margin-bottom: 5px; }
+                .fac-en { direction: ltr; text-align: left; font-family: 'Times New Roman', serif; font-weight: bold; font-size: 1.6em; color: #fff59d; margin-bottom: 5px; }
                 .crs-dv { font-size: 2.5em; color: #b2dfdb; margin-top: 5px; font-weight: bold; }
                 .crs-en { direction: ltr; text-align: left; font-family: 'Times New Roman', serif; font-style: italic; font-size: 2em; color: #80cbc4; margin-bottom: 20px; }
-                .comm { font-family: 'Faruuma'; background: rgba(212,175,55,0.15); border: 2px solid #d4af37; padding: 20px; font-size: 2.2em; color: #fff; border-radius: 10px; text-align: center; margin-top: 20px; width: 100%; box-sizing: border-box; text-shadow: 1px 1px 2px black; }
-                
-                /* Copyright on TV Screen (Subtle) */
-                .tv-copyright {
-                    position: absolute; bottom: 10px; right: 10px; font-size: 10px; color: rgba(255,255,255,0.3); font-family: sans-serif;
+                .comm { font-family: 'Faruuma'; background: rgba(212,175,55,0.15); border: 2px solid #d4af37; padding: 20px; font-size: 2.2em; color: #fff; border-radius: 10px; text-align: center; margin-top: 20px; width: 100%; box-sizing: border-box; }
+
+                /* VIDEO LAYER (Top Z-Index) */
+                #videoLayer {
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: black; z-index: 500; display: none;
+                    justify-content: center; align-items: center;
                 }
+                #videoLayer video, #videoLayer iframe { width: 100%; height: 100%; border: none; }
+                
+                .tv-copyright { position: absolute; bottom: 10px; right: 10px; font-size: 10px; color: rgba(255,255,255,0.3); font-family: sans-serif; z-index: 50; }
             </style>
+            <script>
+                function goFullScreen() {
+                    document.documentElement.requestFullscreen();
+                    document.getElementById('fsOverlay').style.display = 'none';
+                }
+            <\/script>
         </head>
         <body oncontextmenu="return false;">
+            <div id="fsOverlay"><button id="fsBtn" onclick="goFullScreen()">⛶ GO FULL SCREEN</button></div>
+
+            <div id="videoLayer"></div>
+
             <img id="logo" class="uni-logo" style="display:none">
 
             <div id="idle" class="idle-screen">
@@ -314,7 +311,6 @@
                 <div id="card" class="card">
                     <div class="corner tl"></div><div class="corner tr"></div>
                     <div class="corner bl"></div><div class="corner br"></div>
-
                     <div class="photo-col"><img id="stuImg" src="https://via.placeholder.com/280?text=No+Photo"></div>
                     <div class="text-col">
                         <h1 id="tnD">...</h1><h2 id="tnE">...</h2>
@@ -339,7 +335,7 @@
         document.getElementById('connStatus').style.color = "green";
     }
 
-    // --- UPDATE TV ---
+    // --- 2. UPDATE TV (Live Student) ---
     function updateTV() {
         if(!tvWindow || tvWindow.closed) { alert("TV Closed! Re-open."); return; }
         const doc = tvWindow.document;
@@ -357,6 +353,7 @@
             if(currentPhotoData) { img.src = currentPhotoData; img.style.display='block'; }
             else { img.src = 'https://via.placeholder.com/280x280/00281c/d4af37?text=No+Photo'; }
 
+            // Logo Animation
             if(currentLogoData) {
                 const l = doc.getElementById('logo');
                 l.src = currentLogoData; l.style.display = 'block';
@@ -366,15 +363,63 @@
             doc.getElementById('idle').classList.add('hidden');
             setTimeout(() => { doc.getElementById('card').classList.add('active'); }, 300);
 
+            // Ensure video layer is hidden
+            doc.getElementById('videoLayer').style.display = 'none';
+            doc.getElementById('videoLayer').innerHTML = '';
+
             document.getElementById('statusMsg').innerText = "On Air: " + document.getElementById('nE').value;
             document.getElementById('statusMsg').style.color = "green";
         } catch (err) {
             console.error(err);
-            alert("Error updating TV. Please check console.");
         }
     }
 
-    // --- CLEAR TV ---
+    // --- 3. VIDEO FUNCTIONS ---
+    function playLocalVideo() {
+        if(!tvWindow || tvWindow.closed) { alert("TV Closed!"); return; }
+        const file = document.getElementById('videoLocal').files[0];
+        if(!file) { alert("Select a video file first!"); return; }
+
+        const fileURL = URL.createObjectURL(file);
+        const vLayer = tvWindow.document.getElementById('videoLayer');
+        
+        vLayer.innerHTML = `<video src="${fileURL}" autoplay controls></video>`;
+        vLayer.style.display = 'flex';
+        document.getElementById('statusMsg').innerText = "Playing Local Video...";
+        document.getElementById('statusMsg').style.color = "orange";
+    }
+
+    function playYoutube() {
+        if(!tvWindow || tvWindow.closed) { alert("TV Closed!"); return; }
+        const url = document.getElementById('ytLink').value;
+        if(!url) { alert("Enter YouTube URL!"); return; }
+
+        // Extract ID
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        const videoId = (match && match[2].length === 11) ? match[2] : null;
+
+        if(!videoId) { alert("Invalid YouTube URL"); return; }
+
+        const vLayer = tvWindow.document.getElementById('videoLayer');
+        vLayer.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        vLayer.style.display = 'flex';
+        document.getElementById('statusMsg').innerText = "Playing YouTube...";
+        document.getElementById('statusMsg').style.color = "red";
+    }
+
+    function stopVideo() {
+        if(!tvWindow || tvWindow.closed) return;
+        const vLayer = tvWindow.document.getElementById('videoLayer');
+        vLayer.innerHTML = '';
+        vLayer.style.display = 'none';
+        document.getElementById('statusMsg').innerText = "Video Stopped";
+        
+        // Return to idle if no student active, or keep student if active
+        // This keeps the underlying layer as is.
+    }
+
+    // --- 4. CLEAR TV ---
     function clearTV() {
         if(!tvWindow || tvWindow.closed) return;
         const doc = tvWindow.document;
@@ -385,11 +430,14 @@
         const l = doc.getElementById('logo');
         if(l) l.classList.remove('live-mode');
 
+        // Also clear video
+        stopVideo();
+
         document.getElementById('statusMsg').innerText = "Screen Cleared";
         document.getElementById('statusMsg').style.color = "orange";
     }
 
-    // --- HELPER FUNCTIONS ---
+    // --- UTILS ---
     function processPhoto(file, cb) {
         const reader = new FileReader();
         reader.onload = e => {
@@ -407,11 +455,9 @@
         };
         reader.readAsDataURL(file);
     }
-
     document.getElementById('fontFile').onchange = e => {
         const file = e.target.files[0];
         if(!file) return;
-        
         const reader = new FileReader();
         reader.onload = function(evt) {
             currentFontData = evt.target.result;
@@ -427,7 +473,6 @@
                 document.head.appendChild(editorStyle);
             }
             editorStyle.innerHTML = fontCss;
-
             if(tvWindow && !tvWindow.closed) {
                 let tvStyle = tvWindow.document.getElementById('dynamic-font-style');
                 if(!tvStyle) {
@@ -437,13 +482,10 @@
                 }
                 tvStyle.innerHTML = fontCss;
                 alert("✅ Font Updated on TV Screen!");
-            } else {
-                alert("✅ Font Loaded! Open TV Screen to see.");
             }
         };
         reader.readAsDataURL(file);
     };
-
     document.getElementById('csvFile').onchange = e => {
         const r = new FileReader();
         r.onload = ev => {
@@ -463,7 +505,6 @@
         };
         r.readAsText(e.target.files[0]);
     };
-
     document.getElementById('photoFolder').onchange = e => {
         photoFiles = {};
         for(let f of e.target.files) {
@@ -474,7 +515,6 @@
         }
         alert("✅ Auto-Match Ready: " + e.target.files.length + " photos loaded.");
     };
-
     document.getElementById('logoFile').onchange = e => {
         processPhoto(e.target.files[0], d => {
             currentLogoData = d; document.getElementById('logoPreview').src = d;
@@ -484,7 +524,6 @@
             }
         });
     };
-
     function manualPhoto(input) {
         if(input.files && input.files[0]) {
             processPhoto(input.files[0], d => {
@@ -495,7 +534,6 @@
             });
         }
     }
-
     function filterList() {
         let t = document.getElementById('search').value.toLowerCase();
         let l = document.getElementById('stuList'); l.innerHTML = '';
@@ -505,7 +543,6 @@
             }
         });
     }
-
     function loadStudent() {
         let idx = document.getElementById('stuList').value;
         let s = students[idx];
@@ -513,13 +550,10 @@
         document.getElementById('fD').value = s.fD; document.getElementById('fE').value = s.fE;
         document.getElementById('cD').value = s.cD; document.getElementById('cE').value = s.cE;
         document.getElementById('cm').value = s.cm;
-
         let pName = s.ph ? s.ph.trim().toLowerCase() : "";
         let prev = document.getElementById('previewImg');
         let stat = document.getElementById('pStat');
-        
         let foundFile = photoFiles[pName]; 
-
         if(foundFile) {
             stat.innerText = "Loading Auto...";
             processPhoto(foundFile, d => {
@@ -531,7 +565,6 @@
             stat.innerText = "❌ Missing (" + (s.ph||"None") + ")"; stat.style.color="red";
         }
     }
-
     function move(d) {
         let l = document.getElementById('stuList');
         if(l.options.length) {
