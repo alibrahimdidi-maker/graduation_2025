@@ -2,9 +2,9 @@
 <html lang="dv" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>Graduation System (Royal Edition)</title>
+    <title>Graduation System (Final Design)</title>
     <style>
-        /* --- SECURITY: PREVENT SELECTION --- */
+        /* --- SECURITY --- */
         body {
             -webkit-user-select: none; -ms-user-select: none; user-select: none;
             margin: 0; padding: 0;
@@ -16,7 +16,7 @@
             src: local('Faruuma'), local('Faruumaa'), url('Fonts/faruuma.ttf') format('truetype');
         }
 
-        /* --- LOGIN SCREEN --- */
+        /* --- LOGIN --- */
         #loginOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #00281c; z-index: 10000;
@@ -36,7 +36,7 @@
         }
         #loginBtn:hover { background: #ffd700; }
 
-        /* --- MAIN LAYOUT --- */
+        /* --- MAIN APP --- */
         .main-layout { 
             display: none; gap: 15px; height: 96vh; max-width: 100%; margin: 0 auto; 
             padding: 10px; box-sizing: border-box; background: #eceff1;
@@ -54,9 +54,12 @@
         
         .launch-btn { background: #d32f2f; color: white; padding: 12px; width: 100%; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-family: 'Faruuma'; font-size: 16px; margin-bottom: 10px; border-bottom: 3px solid #b71c1c; }
         .launch-btn:active { transform: translateY(2px); border-bottom: 1px solid #b71c1c; }
+        
+        /* Input Fields */
         .file-box { background: #f1f8e9; padding: 10px; border-radius: 5px; border: 1px solid #81c784; margin-bottom: 10px; }
         label { display: block; font-weight: bold; font-size: 13px; margin-bottom: 3px; }
         input[type="file"], input[type="text"], textarea, select { width: 98%; padding: 8px; border: 1px solid #aaa; border-radius: 4px; font-size: 16px; font-family: 'Faruuma'; margin-bottom: 2px; }
+        
         .row { display: flex; gap: 15px; margin-bottom: 8px; align-items: flex-end; }
         .col { flex: 1; }
         .dhi { direction: rtl; text-align: right; }
@@ -103,9 +106,6 @@
                 <label>3. ލޯގޯ (PNG):</label><input type="file" id="logoFile" accept="image/*">
                 <label>4. ފޮންޓް (TTF):</label><input type="file" id="fontFile" accept=".ttf, .otf">
             </div>
-
-            <label>ޔުނިވަރސިޓީގެ ނަން (English):</label>
-            <input type="text" id="uniNameInput" value="THE MALDIVES NATIONAL UNIVERSITY" style="text-align:left;">
 
             <label>ނަން ހޯދާ:</label>
             <input type="text" id="search" placeholder="Type to search..." onkeyup="filterList()">
@@ -199,9 +199,6 @@
         let fontCSS = `url('Fonts/faruuma.ttf') format('truetype')`;
         if (currentFontData) fontCSS = `url('${currentFontData}') format('truetype')`;
 
-        // Get University Name
-        let uniName = document.getElementById('uniNameInput').value;
-
         const designHTML = `
         <!DOCTYPE html>
         <html lang="dv" dir="rtl">
@@ -231,7 +228,6 @@
                     display: flex; flex-direction: column; align-items: center;
                     z-index: 200;
                     transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-                    /* Background is mostly transparent in idle, but set to match bg for safety */
                     background: transparent;
                     padding: 10px; border-radius: 20px;
                 }
@@ -242,26 +238,15 @@
                     transition: all 0.8s ease;
                 }
 
-                .uni-name-text {
-                    color: white; font-family: 'Cinzel', serif; font-weight: bold;
-                    font-size: 1.5em; margin-top: 15px; letter-spacing: 2px;
-                    text-shadow: 0 2px 5px black; text-transform: uppercase;
-                    text-align: center;
-                    transition: all 0.8s ease;
-                }
-
                 /* LIVE MODE (ON BORDER) */
                 .logo-block.live-mode {
                     top: 7.5vh; 
                     transform: translate(-50%, -50%);
-                    /* Masking the border line behind it */
+                    /* Opaque background to hide the border line behind it */
                     background: #00281c; 
                     padding: 0 20px;
                 }
                 .logo-block.live-mode .logo-img { height: 90px; }
-                .logo-block.live-mode .uni-name-text {
-                    font-size: 0.9em; margin-top: 5px; margin-bottom: 5px; letter-spacing: 1px;
-                }
 
                 /* CARD */
                 .card-container { position: relative; width: 90vw; max-width: 1500px; height: 85vh; display: flex; justify-content: center; align-items: center; }
@@ -269,13 +254,13 @@
                     width: 100%; height: 100%; display: flex; flex-direction: row-reverse; align-items: center;
                     background: rgba(0, 30, 20, 0.95); box-shadow: 0 0 100px rgba(0,0,0,1);
                     padding: 50px; box-sizing: border-box;
-                    /* This is the main thin border */
+                    /* Main thin border */
                     border: 1px solid #d4af37; 
                     position: relative; opacity: 0; transition: opacity 0.5s ease;
                 }
                 .card.active { opacity: 1; }
 
-                /* --- NEW ROYAL CORNERS --- */
+                /* --- ROYAL CORNERS --- */
                 /* Thick Outer Corner */
                 .corner-thick { position: absolute; width: 80px; height: 80px; border: 6px solid #d4af37; z-index: 20; }
                 .tl { top: -8px; left: -8px; border-right: 0; border-bottom: 0; }
@@ -283,8 +268,9 @@
                 .bl { bottom: -8px; left: -8px; border-right: 0; border-top: 0; }
                 .br { bottom: -8px; right: -8px; border-left: 0; border-top: 0; }
 
-                /* Long Thin Inner Corner (5 inches figuratively -> 200px) */
-                .corner-thin { position: absolute; width: 250px; height: 250px; border: 1px solid #ffe57f; z-index: 19; opacity: 0.8; }
+                /* Long Thin Inner Corner - SHORTENED AS REQUESTED */
+                /* Reduced from 250px to 100px to avoid awkwardness */
+                .corner-thin { position: absolute; width: 100px; height: 100px; border: 1px solid #ffe57f; z-index: 19; opacity: 0.8; }
                 .tl-in { top: 15px; left: 15px; border-right: 0; border-bottom: 0; }
                 .tr-in { top: 15px; right: 15px; border-left: 0; border-bottom: 0; }
                 .bl-in { bottom: 15px; left: 15px; border-right: 0; border-top: 0; }
@@ -321,7 +307,6 @@
             
             <div id="logoBlock" class="logo-block">
                 <img id="logo" class="logo-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
-                <div class="uni-name-text">${uniName}</div>
             </div>
 
             <div id="idle" class="idle-screen">
@@ -402,7 +387,6 @@
         doc.getElementById('card').classList.remove('active');
         setTimeout(() => { doc.getElementById('idle').classList.remove('hidden'); }, 300);
         
-        // Reset Logo Block
         const lb = doc.getElementById('logoBlock');
         if(lb) lb.classList.remove('live-mode');
 
@@ -467,8 +451,33 @@
         const reader = new FileReader();
         reader.onload = function(evt) {
             currentFontData = evt.target.result;
+            const fontCss = `
+                @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Playfair+Display:ital@0;1&display=swap');
+                @font-face { font-family: 'Faruuma'; src: url('${currentFontData}') format('truetype'); }
+                body, h1, .comm, h2, input, textarea, select, button { font-family: 'Faruuma', sans-serif !important; }
+            `;
+            
+            // 1. Update Editor
+            let editorStyle = document.getElementById('editor-font-style');
+            if(!editorStyle) {
+                editorStyle = document.createElement('style');
+                editorStyle.id = 'editor-font-style';
+                document.head.appendChild(editorStyle);
+            }
+            editorStyle.innerHTML = fontCss;
+
+            // 2. Update TV
             if(tvWindow && !tvWindow.closed) {
-                alert("✅ Font Loaded. Re-open TV Screen to apply.");
+                let tvStyle = tvWindow.document.getElementById('dynamic-font-style');
+                if(!tvStyle) {
+                    tvStyle = tvWindow.document.createElement('style');
+                    tvStyle.id = 'dynamic-font-style';
+                    tvWindow.document.head.appendChild(tvStyle);
+                }
+                tvStyle.innerHTML = fontCss;
+                alert("✅ Font Updated on Control Panel & TV Screen!");
+            } else {
+                alert("✅ Font Loaded on Control Panel. Open TV Screen to apply there too.");
             }
         };
         reader.readAsDataURL(file);
